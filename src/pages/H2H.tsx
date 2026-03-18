@@ -125,10 +125,13 @@ export function H2H() {
   const h2hRaces: { round: string; raceName: string; p1: number; p2: number }[] = []
   const chartData: { race: string; [key: string]: number | string }[] = []
 
+  const matchDriver = (apiDriverId: string, apiCode: string | undefined, local: DriverInfo) =>
+    apiDriverId === local.id || apiCode?.toUpperCase() === local.code.toUpperCase()
+
   if (races) {
     for (const race of races) {
-      const r1 = race.Results?.find(r => r.Driver.driverId === d1.id)
-      const r2 = race.Results?.find(r => r.Driver.driverId === d2.id)
+      const r1 = race.Results?.find(r => matchDriver(r.Driver.driverId, r.Driver.code, d1))
+      const r2 = race.Results?.find(r => matchDriver(r.Driver.driverId, r.Driver.code, d2))
 
       const pts1 = parseFloat(r1?.points ?? '0')
       const pts2 = parseFloat(r2?.points ?? '0')
@@ -172,8 +175,8 @@ export function H2H() {
   // Count poles from qualifying
   if (qualRaces) {
     for (const race of qualRaces) {
-      const q1 = race.QualifyingResults?.find(r => r.Driver.driverId === d1.id)
-      const q2 = race.QualifyingResults?.find(r => r.Driver.driverId === d2.id)
+      const q1 = race.QualifyingResults?.find(r => matchDriver(r.Driver.driverId, r.Driver.code, d1))
+      const q2 = race.QualifyingResults?.find(r => matchDriver(r.Driver.driverId, r.Driver.code, d2))
       if (q1?.position === '1') stats1.poles++
       if (q2?.position === '1') stats2.poles++
     }
@@ -407,7 +410,7 @@ export function H2H() {
                         const tdStats = emptyStats()
                         if (races) {
                           for (const race of races) {
-                            const r = race.Results?.find(res => res.Driver.driverId === td.id)
+                            const r = race.Results?.find(res => matchDriver(res.Driver.driverId, res.Driver.code, td))
                             if (r) {
                               tdStats.points += parseFloat(r.points)
                               const pos = parseInt(r.position)

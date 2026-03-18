@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
@@ -22,6 +22,7 @@ import { Predictions } from '@/pages/Predictions'
 import { Draft } from '@/pages/Draft'
 import { TeamRadio } from '@/pages/TeamRadio'
 import { NotableEvents } from '@/pages/NotableEvents'
+import { DriverProfile } from '@/pages/DriverProfile'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,6 +58,8 @@ function App() {
             <Route path="/draft" element={<Draft />} />
             <Route path="/radio" element={<TeamRadio />} />
             <Route path="/notable-events" element={<NotableEvents />} />
+            <Route path="/drivers" element={<Navigate to="/drivers/norris" replace />} />
+            <Route path="/drivers/:driverId" element={<DriverProfile />} />
           </Route>
         </Routes>
         <Analytics />

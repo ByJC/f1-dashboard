@@ -120,6 +120,13 @@ export interface StandingsTable {
   ConstructorStandings?: ConstructorStanding[]
 }
 
+export type StandingsListItem = {
+  season: string
+  round: string
+  DriverStandings?: DriverStanding[]
+  ConstructorStandings?: ConstructorStanding[]
+}
+
 export interface JolpicaResponse<T> {
   MRData: {
     xmlns: string
@@ -131,16 +138,17 @@ export interface JolpicaResponse<T> {
     RaceTable?: {
       season: string
       round?: string
+      driverId?: string
       Races: T[]
     }
     StandingsTable?: {
       season: string
-      StandingsLists: Array<{
-        season: string
-        round: string
-        DriverStandings?: DriverStanding[]
-        ConstructorStandings?: ConstructorStanding[]
-      }>
+      driverId?: string
+      StandingsLists: StandingsListItem[]
+    }
+    DriverTable?: {
+      driverId?: string
+      Drivers: Driver[]
     }
   }
 }

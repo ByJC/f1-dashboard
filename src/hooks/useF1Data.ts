@@ -7,6 +7,10 @@ import {
   fetchDriverStandings,
   fetchConstructorStandings,
   fetchFastestLaps,
+  fetchDriverCareerResults,
+  fetchDriverCareerQualifying,
+  fetchDriverSeasonStanding,
+  fetchDriverInfo,
 } from '@/api/jolpica'
 
 const STALE_TIME = 1000 * 60 * 30 // 30 minutes
@@ -64,5 +68,41 @@ export function useFastestLaps(season = 'current') {
     queryKey: ['fastestLaps', season],
     queryFn: () => fetchFastestLaps(season),
     staleTime: STALE_TIME,
+  })
+}
+
+export function useDriverCareerResults(driverId: string) {
+  return useQuery({
+    queryKey: ['driverCareerResults', driverId],
+    queryFn: () => fetchDriverCareerResults(driverId),
+    staleTime: STALE_TIME,
+    enabled: Boolean(driverId),
+  })
+}
+
+export function useDriverCareerQualifying(driverId: string) {
+  return useQuery({
+    queryKey: ['driverCareerQualifying', driverId],
+    queryFn: () => fetchDriverCareerQualifying(driverId),
+    staleTime: STALE_TIME,
+    enabled: Boolean(driverId),
+  })
+}
+
+export function useDriverAllSeasonStandings(driverId: string, seasons: string[]) {
+  return useQuery({
+    queryKey: ['driverAllSeasonStandings', driverId, seasons],
+    queryFn: () => Promise.all(seasons.map(s => fetchDriverSeasonStanding(driverId, s))),
+    staleTime: STALE_TIME,
+    enabled: Boolean(driverId) && seasons.length > 0,
+  })
+}
+
+export function useDriverInfo(driverId: string) {
+  return useQuery({
+    queryKey: ['driverInfo', driverId],
+    queryFn: () => fetchDriverInfo(driverId),
+    staleTime: STALE_TIME,
+    enabled: Boolean(driverId),
   })
 }

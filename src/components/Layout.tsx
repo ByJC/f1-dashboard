@@ -22,6 +22,7 @@ const navItems = [
   { path: '/draft', label: 'Draft', icon: '✏️' },
   { path: '/radio', label: 'Team Radio', icon: '📻' },
   { path: '/notable-events', label: 'Notable Events', icon: '🚩' },
+  { path: '/drivers', label: 'Pilotes', icon: '🪖' },
 ]
 
 // Bottom tab bar items for mobile (5 main ones)

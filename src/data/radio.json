@@ -1,0 +1,18 @@
+[
+  {
+    "id": "r1",
+    "driverId": "max_verstappen",
+    "round": 1,
+    "race": "Australian GP",
+    "quote": "This car is undriveable!",
+    "context": "Struggling with balance in race conditions"
+  },
+  {
+    "id": "r2",
+    "driverId": "norris",
+    "round": 1,
+    "race": "Australian GP",
+    "quote": "That's P1! Come on boys!",
+    "context": "After crossing the finish line first"
+  }
+]

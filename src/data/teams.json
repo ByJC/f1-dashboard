@@ -1,0 +1,82 @@
+[
+  {
+    "id": "red_bull",
+    "name": "Red Bull Racing",
+    "shortName": "Red Bull",
+    "color": "#3671C6",
+    "secondaryColor": "#CC1E4A",
+    "drivers": ["max_verstappen", "lawson"]
+  },
+  {
+    "id": "mercedes",
+    "name": "Mercedes-AMG Petronas",
+    "shortName": "Mercedes",
+    "color": "#27F4D2",
+    "secondaryColor": "#00A19C",
+    "drivers": ["george_russell", "antonelli"]
+  },
+  {
+    "id": "ferrari",
+    "name": "Scuderia Ferrari",
+    "shortName": "Ferrari",
+    "color": "#E8002D",
+    "secondaryColor": "#FFD700",
+    "drivers": ["leclerc", "hamilton"]
+  },
+  {
+    "id": "mclaren",
+    "name": "McLaren Racing",
+    "shortName": "McLaren",
+    "color": "#FF8000",
+    "secondaryColor": "#0090FF",
+    "drivers": ["norris", "piastri"]
+  },
+  {
+    "id": "aston_martin",
+    "name": "Aston Martin Aramco",
+    "shortName": "Aston Martin",
+    "color": "#229971",
+    "secondaryColor": "#FF6900",
+    "drivers": ["alonso", "stroll"]
+  },
+  {
+    "id": "alpine",
+    "name": "BWT Alpine F1 Team",
+    "shortName": "Alpine",
+    "color": "#FF87BC",
+    "secondaryColor": "#0090FF",
+    "drivers": ["gasly", "doohan"]
+  },
+  {
+    "id": "williams",
+    "name": "Williams Racing",
+    "shortName": "Williams",
+    "color": "#64C4FF",
+    "secondaryColor": "#00A3E0",
+    "drivers": ["albon", "sainz"]
+  },
+  {
+    "id": "haas",
+    "name": "MoneyGram Haas F1 Team",
+    "shortName": "Haas",
+    "color": "#B6BABD",
+    "secondaryColor": "#E8002D",
+    "drivers": ["ocon", "bearman"]
+  },
+  {
+    "id": "sauber",
+    "name": "Stake F1 Team Kick Sauber",
+    "shortName": "Sauber",
+    "color": "#52E252",
+    "secondaryColor": "#1B1B1B",
+    "drivers": ["hulkenberg", "bortoleto"]
+  },
+  {
+    "id": "racing_bulls",
+    "name": "Visa Cash App RB F1 Team",
+    "shortName": "Racing Bulls",
+    "color": "#6692FF",
+    "secondaryColor": "#1B1B1B",
+    "drivers": ["tsunoda", "hadjar"]
+  }
+]

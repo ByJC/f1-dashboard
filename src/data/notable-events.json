@@ -1,0 +1,10 @@
+[
+  {
+    "id": "e1",
+    "round": 1,
+    "race": "Australian GP",
+    "type": "Red Flag",
+    "description": "Red flag deployed after multi-car incident on lap 3",
+    "icon": "🚩"
+  }
+]

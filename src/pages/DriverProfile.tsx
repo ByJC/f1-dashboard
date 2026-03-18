@@ -15,7 +15,7 @@ import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import {
   useDriverCareerResults,
   useDriverCareerQualifying,
-  useDriverChampionships,
+  useDriverAllSeasonStandings,
 } from '@/hooks/useF1Data'
 import { drivers, getDriver, getTeamByConstructorId } from '@/utils'
 import type { RaceResult, QualifyingResult } from '@/types/f1'
@@ -67,9 +67,19 @@ export function DriverProfile() {
   } = useDriverCareerResults(effectiveDriverId)
 
   const { data: qualifyingData, isLoading: loadingQual } = useDriverCareerQualifying(effectiveDriverId)
-  const { data: championships, isLoading: loadingChamp } = useDriverChampionships(effectiveDriverId)
 
-  const isLoading = loadingResults || loadingQual || loadingChamp
+  // Extract seasons from results to fetch standings per season
+  const seasons = useMemo(
+    () => [...new Set(results?.map(r => r.season) ?? [])].sort(),
+    [results]
+  )
+
+  const { data: seasonStandings, isLoading: loadingStandings } = useDriverAllSeasonStandings(
+    effectiveDriverId,
+    seasons
+  )
+
+  const isLoading = loadingResults || loadingQual || loadingStandings
 
   const localDriver = getDriver(effectiveDriverId)
   const driverColor = localDriver?.color ?? '#e10600'
@@ -90,12 +100,13 @@ export function DriverProfile() {
     [qualifyingData]
   )
 
+  // Stats
   const totalGPs = raceResults.length
   const wins = raceResults.filter(r => r.position === '1').length
   const podiums = raceResults.filter(r => ['1', '2', '3'].includes(r.position)).length
   const poles = qualResults.filter(r => r.position === '1').length
   const careerPoints = raceResults.reduce((sum, r) => sum + parseFloat(r.points || '0'), 0)
-  const champTitles = championships?.filter(s => s.DriverStandings?.[0]?.position === '1').length ?? 0
+  const champTitles = seasonStandings?.filter(s => s.standing?.position === '1').length ?? 0
   const fastestLaps = raceResults.filter(r => r.FastestLap?.rank === '1').length
   const dnfs = raceResults.filter(r => isDNF(r.status)).length
   const finishedRaces = raceResults.filter(r => !isDNF(r.status) && r.position && !isNaN(parseInt(r.position)))
@@ -105,6 +116,7 @@ export function DriverProfile() {
       : 0
   const frontRowStarts = qualResults.filter(r => ['1', '2'].includes(r.position)).length
 
+  // Chart data
   const seasonPoints = useMemo(() => {
     const map: Record<string, number> = {}
     results?.forEach(race => {
@@ -116,16 +128,29 @@ export function DriverProfile() {
       .map(([season, points]) => ({ season, points: Math.round(points * 10) / 10 }))
   }, [results])
 
-  const seasonPositions = useMemo(() => {
-    return (
-      championships
-        ?.map(s => ({
+  const winsPerSeason = useMemo(() => {
+    const map: Record<string, number> = {}
+    results?.forEach(race => {
+      if (race.Results?.[0]?.position === '1') {
+        map[race.season] = (map[race.season] ?? 0) + 1
+      }
+    })
+    return Object.entries(map)
+      .sort(([a], [b]) => parseInt(a) - parseInt(b))
+      .map(([season, wins]) => ({ season, wins }))
+  }, [results])
+
+  const seasonPositions = useMemo(
+    () =>
+      (seasonStandings ?? [])
+        .filter(s => s.standing !== null)
+        .map(s => ({
           season: s.season,
-          position: parseInt(s.DriverStandings?.[0]?.position ?? '20'),
+          position: parseInt(s.standing!.position),
         }))
-        .sort((a, b) => parseInt(a.season) - parseInt(b.season)) ?? []
-    )
-  }, [championships])
+        .sort((a, b) => parseInt(a.season) - parseInt(b.season)),
+    [seasonStandings]
+  )
 
   const winsList = useMemo(
     () =>
@@ -220,11 +245,7 @@ export function DriverProfile() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <StatCard
-          label="Grands Prix"
-          value={totalGPs.toString()}
-          color={driverColor}
-        />
+        <StatCard label="Grands Prix" value={totalGPs.toString()} color={driverColor} />
         <StatCard
           label="Victories"
           value={wins.toString()}
@@ -248,16 +269,8 @@ export function DriverProfile() {
           value={careerPoints % 1 === 0 ? careerPoints.toString() : careerPoints.toFixed(1)}
           color={driverColor}
         />
-        <StatCard
-          label="Championships"
-          value={champTitles.toString()}
-          color={driverColor}
-        />
-        <StatCard
-          label="Fastest Laps"
-          value={fastestLaps.toString()}
-          color={driverColor}
-        />
+        <StatCard label="Championships" value={champTitles.toString()} color={driverColor} />
+        <StatCard label="Fastest Laps" value={fastestLaps.toString()} color={driverColor} />
         <StatCard
           label="DNFs"
           value={dnfs.toString()}
@@ -269,16 +282,13 @@ export function DriverProfile() {
           value={avgFinish > 0 ? avgFinish.toFixed(1) : '—'}
           color={driverColor}
         />
-        <StatCard
-          label="Front Row Starts"
-          value={frontRowStarts.toString()}
-          color={driverColor}
-        />
+        <StatCard label="Front Row Starts" value={frontRowStarts.toString()} color={driverColor} />
       </div>
 
       {/* Charts */}
       {seasonPoints.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Points per season */}
           <div
             className="rounded-xl border p-5"
             style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
@@ -298,6 +308,29 @@ export function DriverProfile() {
             </ResponsiveContainer>
           </div>
 
+          {/* Wins per season */}
+          {winsPerSeason.length > 0 && (
+            <div
+              className="rounded-xl border p-5"
+              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            >
+              <h2 className="text-sm font-semibold text-gray-400 mb-4">Wins per Season</h2>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={winsPerSeason}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                  <XAxis dataKey="season" tick={{ fill: '#6b7280', fontSize: 10 }} />
+                  <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                    labelStyle={{ color: '#f5f5f5' }}
+                  />
+                  <Bar dataKey="wins" fill={driverColor} radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Championship position per season */}
           {seasonPositions.length > 0 && (
             <div
               className="rounded-xl border p-5"
@@ -308,7 +341,7 @@ export function DriverProfile() {
                 <LineChart data={seasonPositions}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
                   <XAxis dataKey="season" tick={{ fill: '#6b7280', fontSize: 10 }} />
-                  <YAxis reversed domain={[1, 'dataMax']} tick={{ fill: '#6b7280', fontSize: 10 }} />
+                  <YAxis reversed domain={[1, 'dataMax']} tick={{ fill: '#6b7280', fontSize: 10 }} allowDecimals={false} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
                     labelStyle={{ color: '#f5f5f5' }}
@@ -329,10 +362,10 @@ export function DriverProfile() {
       )}
 
       {/* Season history table */}
-      {championships && championships.length > 0 && (
+      {seasonStandings && seasonStandings.length > 0 && (
         <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
           <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
-            <h2 className="font-bold text-white text-sm">Season History ({championships.length} seasons)</h2>
+            <h2 className="font-bold text-white text-sm">Season History ({seasonStandings.length} seasons)</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -346,58 +379,57 @@ export function DriverProfile() {
                 </tr>
               </thead>
               <tbody>
-                {[...championships].reverse().map(s => {
-                  const standing = s.DriverStandings?.[0]
-                  if (!standing) return null
-                  const pos = parseInt(standing.position)
-                  const team = getTeamByConstructorId(standing.Constructors?.[0]?.constructorId ?? '')
-                  return (
-                    <tr
-                      key={s.season}
-                      className="transition-colors hover:bg-white/3"
-                      style={{ borderBottom: '1px solid #1f1f1f' }}
-                    >
-                      <td className="px-4 py-3 font-mono font-bold text-white">{s.season}</td>
-                      <td className="px-4 py-3">
-                        {team ? (
+                {[...seasonStandings]
+                  .sort((a, b) => parseInt(b.season) - parseInt(a.season))
+                  .map(s => {
+                    const standing = s.standing
+                    if (!standing) return null
+                    const pos = parseInt(standing.position)
+                    const team = getTeamByConstructorId(standing.Constructors?.[0]?.constructorId ?? '')
+                    return (
+                      <tr
+                        key={s.season}
+                        className="transition-colors hover:bg-white/3"
+                        style={{ borderBottom: '1px solid #1f1f1f' }}
+                      >
+                        <td className="px-4 py-3 font-mono font-bold text-white">{s.season}</td>
+                        <td className="px-4 py-3">
+                          {team ? (
+                            <span
+                              className="text-xs px-2 py-1 rounded font-semibold"
+                              style={{
+                                backgroundColor: `${team.color}20`,
+                                color: team.color,
+                                border: `1px solid ${team.color}40`,
+                              }}
+                            >
+                              {team.shortName}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500 text-xs">
+                              {standing.Constructors?.[0]?.name ?? '—'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-right">
                           <span
-                            className="text-xs px-2 py-1 rounded font-semibold"
+                            className="font-mono font-bold"
                             style={{
-                              backgroundColor: `${team.color}20`,
-                              color: team.color,
-                              border: `1px solid ${team.color}40`,
+                              color:
+                                pos === 1 ? '#ffd700'
+                                : pos === 2 ? '#c0c0c0'
+                                : pos === 3 ? '#cd7f32'
+                                : '#9ca3af',
                             }}
                           >
-                            {team.shortName}
+                            P{standing.position}
                           </span>
-                        ) : (
-                          <span className="text-gray-500 text-xs">
-                            {standing.Constructors?.[0]?.name ?? '—'}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <span
-                          className="font-mono font-bold"
-                          style={{
-                            color:
-                              pos === 1
-                                ? '#ffd700'
-                                : pos === 2
-                                ? '#c0c0c0'
-                                : pos === 3
-                                ? '#cd7f32'
-                                : '#9ca3af',
-                          }}
-                        >
-                          P{standing.position}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right font-mono text-gray-300">{standing.points}</td>
-                      <td className="px-4 py-3 text-right font-mono text-gray-300">{standing.wins}</td>
-                    </tr>
-                  )
-                })}
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono text-gray-300">{standing.points}</td>
+                        <td className="px-4 py-3 text-right font-mono text-gray-300">{standing.wins}</td>
+                      </tr>
+                    )
+                  })}
               </tbody>
             </table>
           </div>

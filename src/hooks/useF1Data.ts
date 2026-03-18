@@ -9,7 +9,7 @@ import {
   fetchFastestLaps,
   fetchDriverCareerResults,
   fetchDriverCareerQualifying,
-  fetchDriverChampionships,
+  fetchDriverSeasonStanding,
   fetchDriverInfo,
 } from '@/api/jolpica'
 
@@ -89,12 +89,12 @@ export function useDriverCareerQualifying(driverId: string) {
   })
 }
 
-export function useDriverChampionships(driverId: string) {
+export function useDriverAllSeasonStandings(driverId: string, seasons: string[]) {
   return useQuery({
-    queryKey: ['driverChampionships', driverId],
-    queryFn: () => fetchDriverChampionships(driverId),
+    queryKey: ['driverAllSeasonStandings', driverId, seasons],
+    queryFn: () => Promise.all(seasons.map(s => fetchDriverSeasonStanding(driverId, s))),
     staleTime: STALE_TIME,
-    enabled: Boolean(driverId),
+    enabled: Boolean(driverId) && seasons.length > 0,
   })
 }
 

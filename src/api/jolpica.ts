@@ -1,4 +1,4 @@
-import type { JolpicaResponse, Race, DriverStanding, ConstructorStanding, Driver, StandingsListItem } from '@/types/f1'
+import type { JolpicaResponse, Race, DriverStanding, ConstructorStanding, Driver } from '@/types/f1'
 
 const BASE_URL = 'https://api.jolpi.ca/ergast/f1'
 
@@ -79,9 +79,15 @@ export async function fetchDriverCareerQualifying(driverId: string): Promise<Rac
   )
 }
 
-export async function fetchDriverChampionships(driverId: string): Promise<StandingsListItem[]> {
-  const data = await fetchJolpica<never>(`/drivers/${driverId}/driverStandings`, 100)
-  return data.MRData.StandingsTable?.StandingsLists ?? []
+export async function fetchDriverSeasonStanding(
+  driverId: string,
+  season: string
+): Promise<{ season: string; standing: DriverStanding | null }> {
+  const data = await fetchJolpica<never>(`/${season}/drivers/${driverId}/driverStandings`)
+  return {
+    season,
+    standing: data.MRData.StandingsTable?.StandingsLists[0]?.DriverStandings?.[0] ?? null,
+  }
 }
 
 export async function fetchDriverInfo(driverId: string): Promise<Driver | null> {

@@ -83,7 +83,7 @@ export function Timeline() {
         </div>
         <div
           className="rounded-xl border p-12 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div className="text-5xl mb-4">🏎️</div>
           <p className="text-white font-semibold mb-2">The season hasn't started yet</p>
@@ -140,12 +140,12 @@ export function Timeline() {
         {/* Center line — desktop only */}
         <div
           className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
-          style={{ backgroundColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--border-default)' }}
         />
         {/* Left line — mobile */}
         <div
           className="md:hidden absolute left-4 top-0 bottom-0 w-px"
-          style={{ backgroundColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--border-default)' }}
         />
 
         <div className="space-y-0">
@@ -243,7 +243,7 @@ export function Timeline() {
                   <div className="flex-shrink-0 flex flex-col items-center" style={{ width: '2rem' }}>
                     <div
                       className="w-3 h-3 rounded-full border-2 mt-1"
-                      style={{ backgroundColor: '#0f0f0f', borderColor: '#e10600' }}
+                      style={{ backgroundColor: 'var(--bg-base)', borderColor: '#e10600' }}
                     />
                   </div>
 
@@ -278,7 +278,7 @@ export function Timeline() {
       {!hasAnyData && pastRaces.length > 0 && (
         <div
           className="rounded-xl border p-8 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500 text-sm">
             No events, radio quotes or Driver of the Day recorded yet.
@@ -323,7 +323,7 @@ function TimelineCard({
     <div
       className={`rounded-lg border px-3 py-2 flex items-start gap-2 ${align === 'right' ? 'flex-row-reverse' : ''}`}
       style={{
-        backgroundColor: '#1a1a1a',
+        backgroundColor: 'var(--bg-card)',
         borderColor: `${item.color}30`,
       }}
     >

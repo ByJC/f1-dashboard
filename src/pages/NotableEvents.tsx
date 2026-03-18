@@ -90,7 +90,7 @@ export function NotableEvents() {
           className="text-xs px-3 py-1 rounded-full border transition-colors"
           style={{
             backgroundColor: !filter ? '#e1060020' : 'transparent',
-            borderColor: !filter ? '#e10600' : '#3a3a3a',
+            borderColor: !filter ? '#e10600' : 'var(--border-muted)',
             color: !filter ? '#ef4444' : '#6b7280',
           }}
         >
@@ -103,7 +103,7 @@ export function NotableEvents() {
             className="text-xs px-3 py-1 rounded-full border transition-colors"
             style={{
               backgroundColor: filter === et.value ? `${et.color}20` : 'transparent',
-              borderColor: filter === et.value ? et.color : '#3a3a3a',
+              borderColor: filter === et.value ? et.color : 'var(--border-muted)',
               color: filter === et.value ? et.color : '#6b7280',
             }}
           >
@@ -114,7 +114,7 @@ export function NotableEvents() {
 
       {/* Add event form */}
       {adding && (
-        <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: '#1a1a1a', borderColor: '#3a3a3a' }}>
+        <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)' }}>
           <h3 className="text-white font-semibold text-sm">New Notable Event</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -127,7 +127,7 @@ export function NotableEvents() {
                   setForm(f => ({ ...f, round, race: race?.raceName ?? '' }))
                 }}
                 className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white"
-                style={{ borderColor: '#3a3a3a' }}
+                style={{ borderColor: 'var(--border-muted)' }}
               >
                 <option value="">Select round</option>
                 {schedule?.map(r => (
@@ -144,7 +144,7 @@ export function NotableEvents() {
                   setForm(f => ({ ...f, type: e.target.value, icon: et?.icon ?? '📝' }))
                 }}
                 className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white"
-                style={{ borderColor: '#3a3a3a' }}
+                style={{ borderColor: 'var(--border-muted)' }}
               >
                 {EVENT_TYPES.map(et => (
                   <option key={et.value} value={et.value}>{et.icon} {et.value}</option>
@@ -160,11 +160,11 @@ export function NotableEvents() {
               placeholder="What happened?"
               rows={2}
               className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white resize-none"
-              style={{ borderColor: '#3a3a3a' }}
+              style={{ borderColor: 'var(--border-muted)' }}
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <button onClick={() => setAdding(false)} className="text-sm px-4 py-2 rounded-lg border text-gray-400" style={{ borderColor: '#3a3a3a' }}>
+            <button onClick={() => setAdding(false)} className="text-sm px-4 py-2 rounded-lg border text-gray-400" style={{ borderColor: 'var(--border-muted)' }}>
               Cancel
             </button>
             <button onClick={addEvent} className="text-sm px-4 py-2 rounded-lg bg-red-600 text-white font-semibold">
@@ -175,7 +175,7 @@ export function NotableEvents() {
       )}
 
       {rounds.length === 0 ? (
-        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-gray-500">No events recorded yet</p>
         </div>
       ) : (
@@ -195,8 +195,8 @@ export function NotableEvents() {
                         key={evt.id}
                         className="rounded-xl border p-4"
                         style={{
-                          backgroundColor: '#1a1a1a',
-                          borderColor: et ? `${et.color}30` : '#2a2a2a',
+                          backgroundColor: 'var(--bg-card)',
+                          borderColor: et ? `${et.color}30` : 'var(--border-default)',
                         }}
                       >
                         <div className="flex items-start gap-3">

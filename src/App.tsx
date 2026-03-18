@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeProvider } from 'next-themes'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 import { Layout } from '@/components/Layout'
@@ -35,37 +36,39 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/map" element={<WorldMap />} />
-            <Route path="/standings/drivers" element={<DriverStandings />} />
-            <Route path="/standings/constructors" element={<ConstructorStandings />} />
-            <Route path="/results/races" element={<RaceResults />} />
-            <Route path="/results/sprints" element={<SprintResults />} />
-            <Route path="/track-stats" element={<TrackStats />} />
-            <Route path="/h2h" element={<H2H />} />
-            <Route path="/records" element={<Records />} />
-            <Route path="/tire-strategy" element={<TireStrategy />} />
-            <Route path="/pit-stops" element={<PitStopStats />} />
-            <Route path="/timeline" element={<Timeline />} />
-            <Route path="/bingo" element={<Bingo />} />
-            <Route path="/dotd" element={<DriverOfTheDay />} />
-            <Route path="/predictions" element={<Predictions />} />
-            <Route path="/draft" element={<Draft />} />
-            <Route path="/radio" element={<TeamRadio />} />
-            <Route path="/notable-events" element={<NotableEvents />} />
-            <Route path="/drivers" element={<Navigate to="/drivers/norris" replace />} />
-            <Route path="/drivers/:driverId" element={<DriverProfile />} />
-          </Route>
-        </Routes>
-        <Analytics />
-        <SpeedInsights />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/map" element={<WorldMap />} />
+              <Route path="/standings/drivers" element={<DriverStandings />} />
+              <Route path="/standings/constructors" element={<ConstructorStandings />} />
+              <Route path="/results/races" element={<RaceResults />} />
+              <Route path="/results/sprints" element={<SprintResults />} />
+              <Route path="/track-stats" element={<TrackStats />} />
+              <Route path="/h2h" element={<H2H />} />
+              <Route path="/records" element={<Records />} />
+              <Route path="/tire-strategy" element={<TireStrategy />} />
+              <Route path="/pit-stops" element={<PitStopStats />} />
+              <Route path="/timeline" element={<Timeline />} />
+              <Route path="/bingo" element={<Bingo />} />
+              <Route path="/dotd" element={<DriverOfTheDay />} />
+              <Route path="/predictions" element={<Predictions />} />
+              <Route path="/draft" element={<Draft />} />
+              <Route path="/radio" element={<TeamRadio />} />
+              <Route path="/notable-events" element={<NotableEvents />} />
+              <Route path="/drivers" element={<Navigate to="/drivers/norris" replace />} />
+              <Route path="/drivers/:driverId" element={<DriverProfile />} />
+            </Route>
+          </Routes>
+          <Analytics />
+          <SpeedInsights />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 

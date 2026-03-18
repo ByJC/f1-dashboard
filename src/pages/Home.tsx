@@ -47,7 +47,7 @@ export function Home() {
             <Link
               to="/calendar"
               className="block rounded-xl p-5 border transition-colors hover:border-red-600/50"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -82,7 +82,7 @@ export function Home() {
             <Link
               to="/results/races"
               className="block rounded-xl p-5 border transition-colors hover:border-gray-600"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -112,7 +112,7 @@ export function Home() {
           {/* Season progress */}
           <div
             className="rounded-xl p-5 border"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-3">
               Season Progress
@@ -126,7 +126,7 @@ export function Home() {
                     key={race.round}
                     className="w-4 h-4 rounded-sm transition-all"
                     style={{
-                      backgroundColor: done ? '#e10600' : isNext ? '#e1060040' : '#2a2a2a',
+                      backgroundColor: done ? '#e10600' : isNext ? '#e1060040' : 'var(--border-default)',
                       border: isNext ? '1px solid #e10600' : '1px solid transparent',
                     }}
                     title={`R${race.round} ${race.raceName}`}
@@ -144,14 +144,14 @@ export function Home() {
       {/* Standings Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Driver Standings */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h3 className="font-bold text-white">Driver Championship</h3>
             <Link to="/standings/drivers" className="text-xs text-red-400 hover:text-red-300">
               View all →
             </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+          <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
             {top3Drivers.map(s => {
               const driver = getDriverByCode(s.Driver.code ?? s.Driver.driverId)
               return (
@@ -182,14 +182,14 @@ export function Home() {
         </div>
 
         {/* Constructor Standings */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h3 className="font-bold text-white">Constructor Championship</h3>
             <Link to="/standings/constructors" className="text-xs text-red-400 hover:text-red-300">
               View all →
             </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+          <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
             {top3Constructors.map(s => {
               const team = getTeamByConstructorId(s.Constructor.constructorId)
               return (

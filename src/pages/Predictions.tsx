@@ -82,9 +82,9 @@ function DriverSelect({
       <select
         className="text-sm font-semibold rounded-lg px-3 py-2 outline-none cursor-pointer"
         style={{
-          backgroundColor: '#0f0f0f',
-          color: selected?.color ?? '#9ca3af',
-          border: `1px solid ${selected ? `${selected.color}50` : '#3a3a3a'}`,
+          backgroundColor: 'var(--bg-base)',
+          color: selected?.color ?? 'var(--text-secondary)',
+          border: `1px solid ${selected ? `${selected.color}50` : 'var(--border-muted)'}`,
         }}
         value={value}
         onChange={e => onChange(e.target.value)}
@@ -132,9 +132,9 @@ function PredictionRow({
       <div
         className="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold"
         style={{
-          backgroundColor: predicted ? `${predicted.color}15` : '#2a2a2a',
+          backgroundColor: predicted ? `${predicted.color}15` : 'var(--border-default)',
           color: predicted?.color ?? '#6b7280',
-          border: `1px solid ${predicted ? `${predicted.color}30` : '#3a3a3a'}`,
+          border: `1px solid ${predicted ? `${predicted.color}30` : 'var(--border-muted)'}`,
         }}
       >
         {predicted ? `${predicted.code} — ${predicted.firstName} ${predicted.lastName}` : '—'}
@@ -152,9 +152,9 @@ function PredictionRow({
           <div
             className="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold"
             style={{
-              backgroundColor: actual ? `${actual.color}15` : '#2a2a2a',
+              backgroundColor: actual ? `${actual.color}15` : 'var(--border-default)',
               color: actual?.color ?? '#6b7280',
-              border: `1px solid ${actual ? `${actual.color}30` : '#3a3a3a'}`,
+              border: `1px solid ${actual ? `${actual.color}30` : 'var(--border-muted)'}`,
             }}
           >
             {actual ? `${actual.code} — ${actual.firstName} ${actual.lastName}` : '—'}
@@ -188,7 +188,7 @@ export function Predictions() {
         <h1 className="text-2xl font-black text-white">Race Predictions</h1>
         <div
           className="rounded-xl border p-10 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500">No schedule available yet.</p>
         </div>
@@ -258,7 +258,7 @@ export function Predictions() {
         {/* Score display */}
         <div
           className="rounded-xl border px-6 py-3 flex items-center gap-3"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div className="text-center">
             <p className="text-3xl font-black" style={{ color: '#e10600' }}>
@@ -277,7 +277,7 @@ export function Predictions() {
       {/* Scoring key */}
       <div
         className="rounded-xl border px-5 py-4 flex flex-wrap gap-6 text-xs text-gray-400"
-        style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
       >
         <span>
           <span className="text-green-400 font-bold">✓ Exact position</span> = 3 pts
@@ -309,7 +309,7 @@ export function Predictions() {
                 <div
                   key={race.round}
                   className="rounded-xl border overflow-hidden"
-                  style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+                  style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
                 >
                   <button
                     className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/3 transition-colors"
@@ -382,7 +382,7 @@ export function Predictions() {
           {/* Summary table */}
           <div
             className="rounded-xl border overflow-hidden mb-6"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -497,7 +497,7 @@ export function Predictions() {
                 <div
                   key={race.round}
                   className="rounded-xl border overflow-hidden"
-                  style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+                  style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
                 >
                   <div
                     className="flex items-center justify-between px-5 py-3"
@@ -546,7 +546,7 @@ export function Predictions() {
                                 className="font-mono font-bold text-xs px-2 py-0.5 rounded"
                                 style={{
                                   color: d?.color ?? '#6b7280',
-                                  backgroundColor: d ? `${d.color}20` : '#2a2a2a',
+                                  backgroundColor: d ? `${d.color}20` : 'var(--border-default)',
                                 }}
                               >
                                 {d?.code ?? '—'}

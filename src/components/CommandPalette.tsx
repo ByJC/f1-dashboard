@@ -53,16 +53,16 @@ export function CommandPalette() {
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]"
-      style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+      style={{ backgroundColor: 'var(--overlay)', backdropFilter: 'blur(4px)' }}
       onClick={() => setOpen(false)}
     >
       <div
         className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
-        style={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a' }}
+        style={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a' }}
         onClick={e => e.stopPropagation()}
       >
         <Command label="F1 Dashboard Search">
-          <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+          <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <span className="text-gray-500">🔍</span>
             <Command.Input
               value={search}
@@ -71,7 +71,7 @@ export function CommandPalette() {
               className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-600"
               style={{ caretColor: '#e10600' }}
             />
-            <kbd className="text-xs text-gray-600 border rounded px-1.5 py-0.5" style={{ borderColor: '#3a3a3a' }}>ESC</kbd>
+            <kbd className="text-xs text-gray-600 border rounded px-1.5 py-0.5" style={{ borderColor: 'var(--border-muted)' }}>ESC</kbd>
           </div>
 
           <Command.List className="max-h-80 overflow-y-auto py-2">
@@ -133,10 +133,10 @@ export function CommandPalette() {
             </Command.Group>
           </Command.List>
 
-          <div className="flex items-center gap-4 px-4 py-2 border-t text-xs text-gray-600" style={{ borderColor: '#2a2a2a' }}>
-            <span><kbd className="border rounded px-1" style={{ borderColor: '#3a3a3a' }}>↑↓</kbd> navigate</span>
-            <span><kbd className="border rounded px-1" style={{ borderColor: '#3a3a3a' }}>↵</kbd> select</span>
-            <span><kbd className="border rounded px-1" style={{ borderColor: '#3a3a3a' }}>⌘K</kbd> toggle</span>
+          <div className="flex items-center gap-4 px-4 py-2 border-t text-xs text-gray-600" style={{ borderColor: 'var(--border-default)' }}>
+            <span><kbd className="border rounded px-1" style={{ borderColor: 'var(--border-muted)' }}>↑↓</kbd> navigate</span>
+            <span><kbd className="border rounded px-1" style={{ borderColor: 'var(--border-muted)' }}>↵</kbd> select</span>
+            <span><kbd className="border rounded px-1" style={{ borderColor: 'var(--border-muted)' }}>⌘K</kbd> toggle</span>
           </div>
         </Command>
       </div>

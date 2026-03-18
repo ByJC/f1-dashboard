@@ -26,7 +26,7 @@ export function RaceResults() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-black text-white">Race Results Grid</h1>
-        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-gray-500">No race results available yet for 2026</p>
         </div>
       </div>
@@ -59,9 +59,9 @@ export function RaceResults() {
             key={d.id}
             className="text-xs px-2 py-1 rounded font-mono font-bold"
             style={{
-              backgroundColor: d.info ? `${d.info.color}20` : '#2a2a2a',
+              backgroundColor: d.info ? `${d.info.color}20` : 'var(--border-default)',
               color: d.info?.color ?? '#6b7280',
-              border: `1px solid ${d.info ? `${d.info.color}40` : '#3a3a3a'}`,
+              border: `1px solid ${d.info ? `${d.info.color}40` : 'var(--border-muted)'}`,
             }}
           >
             {d.code}
@@ -70,12 +70,12 @@ export function RaceResults() {
       </div>
 
       {/* Results grid */}
-      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
         <div className="overflow-x-auto">
           <table className="text-xs whitespace-nowrap">
             <thead>
               <tr style={{ borderBottom: '1px solid #2a2a2a' }}>
-                <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: '#1a1a1a', minWidth: 60 }}>
+                <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: 'var(--bg-card)', minWidth: 60 }}>
                   P
                 </th>
                 {races.map(r => (
@@ -94,7 +94,7 @@ export function RaceResults() {
                   style={{ borderBottom: '1px solid #1f1f1f' }}
                 >
                   <td className="sticky left-0 px-3 py-1.5 font-mono font-bold" style={{
-                    backgroundColor: '#1a1a1a',
+                    backgroundColor: 'var(--bg-card)',
                     color: POSITION_COLORS[pos] ?? '#6b7280'
                   }}>
                     {pos}
@@ -117,7 +117,7 @@ export function RaceResults() {
                         <div
                           className="text-center px-1.5 py-1 rounded font-mono font-bold text-xs"
                           style={{
-                            backgroundColor: driver ? `${driver.color}25` : '#2a2a2a',
+                            backgroundColor: driver ? `${driver.color}25` : 'var(--border-default)',
                             color: driver?.color ?? '#6b7280',
                             opacity: isRetired ? 0.5 : 1,
                           }}
@@ -142,15 +142,15 @@ export function RaceResults() {
           <div
             key={race.round}
             className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
-            <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: '#2a2a2a' }}>
+            <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--border-default)' }}>
               <div>
                 <span className="text-gray-500 text-xs font-mono mr-2">R{race.round}</span>
                 <span className="text-white font-semibold text-sm">{race.raceName}</span>
               </div>
             </div>
-            <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+            <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               {race.Results?.slice(0, 10).map(result => {
                 const driver = getDriverByCode(result.Driver.code ?? '')
                 return (

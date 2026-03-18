@@ -61,7 +61,7 @@ export function TeamRadio() {
 
       {/* Add quote form */}
       {adding && (
-        <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: '#1a1a1a', borderColor: '#3a3a3a' }}>
+        <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)' }}>
           <h3 className="text-white font-semibold text-sm">New Radio Quote</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -72,7 +72,7 @@ export function TeamRadio() {
                 onChange={e => setForm(f => ({ ...f, driverId: e.target.value }))}
                 placeholder="VER"
                 className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white font-mono uppercase"
-                style={{ borderColor: '#3a3a3a' }}
+                style={{ borderColor: 'var(--border-muted)' }}
               />
             </div>
             <div>
@@ -83,7 +83,7 @@ export function TeamRadio() {
                 onChange={e => setForm(f => ({ ...f, round: e.target.value }))}
                 placeholder="1"
                 className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white"
-                style={{ borderColor: '#3a3a3a' }}
+                style={{ borderColor: 'var(--border-muted)' }}
               />
             </div>
           </div>
@@ -95,7 +95,7 @@ export function TeamRadio() {
               onChange={e => setForm(f => ({ ...f, race: e.target.value }))}
               placeholder="Australian GP"
               className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white"
-              style={{ borderColor: '#3a3a3a' }}
+              style={{ borderColor: 'var(--border-muted)' }}
             />
           </div>
           <div>
@@ -106,7 +106,7 @@ export function TeamRadio() {
               placeholder="What did they say?"
               rows={2}
               className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white resize-none"
-              style={{ borderColor: '#3a3a3a' }}
+              style={{ borderColor: 'var(--border-muted)' }}
             />
           </div>
           <div>
@@ -117,14 +117,14 @@ export function TeamRadio() {
               onChange={e => setForm(f => ({ ...f, context: e.target.value }))}
               placeholder="What was happening at the time?"
               className="w-full text-sm px-3 py-2 rounded-lg bg-black border text-white"
-              style={{ borderColor: '#3a3a3a' }}
+              style={{ borderColor: 'var(--border-muted)' }}
             />
           </div>
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => setAdding(false)}
               className="text-sm px-4 py-2 rounded-lg border text-gray-400"
-              style={{ borderColor: '#3a3a3a' }}
+              style={{ borderColor: 'var(--border-muted)' }}
             >
               Cancel
             </button>
@@ -139,7 +139,7 @@ export function TeamRadio() {
       )}
 
       {rounds.length === 0 ? (
-        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-gray-500 text-lg mb-2">📻</p>
           <p className="text-gray-500">No radio quotes yet — add the first one!</p>
         </div>
@@ -160,8 +160,8 @@ export function TeamRadio() {
                       key={quote.id}
                       className="rounded-xl border p-4 space-y-2"
                       style={{
-                        backgroundColor: '#1a1a1a',
-                        borderColor: driver ? `${driver.color}30` : '#2a2a2a',
+                        backgroundColor: 'var(--bg-card)',
+                        borderColor: driver ? `${driver.color}30` : 'var(--border-default)',
                       }}
                     >
                       <div className="flex items-center gap-2">

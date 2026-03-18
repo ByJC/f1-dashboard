@@ -14,7 +14,7 @@ export function TrackStats() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-black text-white">Track Stats</h1>
-        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-gray-500">No race data available yet for 2026</p>
         </div>
       </div>
@@ -25,7 +25,7 @@ export function TrackStats() {
     <div className="space-y-6">
       <h1 className="text-2xl font-black text-white">Track Stats</h1>
 
-      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

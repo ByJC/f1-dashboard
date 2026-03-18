@@ -87,7 +87,7 @@ export function TireStrategy() {
         <PageHeader />
         <div
           className="rounded-xl border p-12 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div className="text-4xl mb-3">🏎️</div>
           <p className="text-gray-400 font-semibold">No completed races yet</p>
@@ -132,7 +132,7 @@ export function TireStrategy() {
               className="text-xs px-3 py-1.5 rounded-lg border font-mono transition-colors"
               style={{
                 backgroundColor: activeRound === race.round ? '#e1060020' : 'transparent',
-                borderColor: activeRound === race.round ? '#e10600' : '#3a3a3a',
+                borderColor: activeRound === race.round ? '#e10600' : 'var(--border-muted)',
                 color: activeRound === race.round ? '#ef4444' : '#6b7280',
               }}
             >
@@ -173,14 +173,14 @@ export function TireStrategy() {
       ) : !pitStops || pitStops.length === 0 ? (
         <div
           className="rounded-xl border p-10 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500">No pit stop data available for this race.</p>
         </div>
       ) : (
         <div
           className="rounded-xl border overflow-hidden"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div className="p-4 space-y-1 overflow-x-auto">
             {driverOrder.map(driverId => {
@@ -248,7 +248,7 @@ export function TireStrategy() {
                           {stint.stopAfter && (
                             <div
                               className="w-0.5 h-full flex-shrink-0"
-                              style={{ backgroundColor: '#0f0f0f' }}
+                              style={{ backgroundColor: 'var(--bg-base)' }}
                               title={`Pit stop: ${stint.stopAfter.duration}s`}
                             />
                           )}

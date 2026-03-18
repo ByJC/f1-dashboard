@@ -27,8 +27,8 @@ export function Calendar() {
               key={race.round}
               className="rounded-xl border overflow-hidden transition-all"
               style={{
-                backgroundColor: '#1a1a1a',
-                borderColor: isNext ? '#e10600' : isPast ? '#2a2a2a' : '#3a3a3a',
+                backgroundColor: 'var(--bg-card)',
+                borderColor: isNext ? '#e10600' : isPast ? 'var(--border-default)' : 'var(--border-muted)',
                 opacity: isPast ? 0.6 : 1,
               }}
             >

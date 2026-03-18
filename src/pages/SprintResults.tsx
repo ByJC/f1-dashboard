@@ -18,18 +18,18 @@ export function SprintResults() {
       </div>
 
       {(!sprints || sprints.length === 0) ? (
-        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-10 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-gray-500">No sprint results available yet for 2026</p>
         </div>
       ) : (
         <>
           {/* Sprint grid */}
-          <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+          <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
             <div className="overflow-x-auto">
               <table className="text-xs whitespace-nowrap">
                 <thead>
                   <tr style={{ borderBottom: '1px solid #2a2a2a' }}>
-                    <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: '#1a1a1a', minWidth: 40 }}>
+                    <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: 'var(--bg-card)', minWidth: 40 }}>
                       P
                     </th>
                     {sprints.map(s => (
@@ -43,7 +43,7 @@ export function SprintResults() {
                 <tbody>
                   {Array.from({ length: 8 }, (_, i) => i + 1).map(pos => (
                     <tr key={pos} style={{ borderBottom: '1px solid #1f1f1f' }}>
-                      <td className="sticky left-0 px-3 py-1.5 font-mono font-bold text-gray-500" style={{ backgroundColor: '#1a1a1a' }}>
+                      <td className="sticky left-0 px-3 py-1.5 font-mono font-bold text-gray-500" style={{ backgroundColor: 'var(--bg-card)' }}>
                         {pos}
                       </td>
                       {sprints.map(sprint => {
@@ -55,7 +55,7 @@ export function SprintResults() {
                             <div
                               className="text-center px-1.5 py-1 rounded font-mono font-bold"
                               style={{
-                                backgroundColor: driver ? `${driver.color}25` : '#2a2a2a',
+                                backgroundColor: driver ? `${driver.color}25` : 'var(--border-default)',
                                 color: driver?.color ?? '#6b7280',
                               }}
                               title={`${result.Driver.givenName} ${result.Driver.familyName}`}
@@ -78,15 +78,15 @@ export function SprintResults() {
               <div
                 key={sprint.round}
                 className="rounded-xl border overflow-hidden"
-                style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
               >
-                <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: '#2a2a2a', backgroundColor: '#ffffff08' }}>
+                <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: 'var(--border-default)', backgroundColor: '#ffffff08' }}>
                   <span className="text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-2 py-0.5 rounded font-bold">
                     SPRINT
                   </span>
                   <span className="text-white font-semibold text-sm">{sprint.raceName}</span>
                 </div>
-                <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+                <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
                   {sprint.SprintResults?.slice(0, 8).map(result => {
                     const driver = getDriverByCode(result.Driver.code ?? '')
                     return (

@@ -62,7 +62,7 @@ export function Bingo() {
         <button
           onClick={reset}
           className="text-sm px-3 py-1.5 rounded-lg border transition-colors text-gray-400 hover:text-white"
-          style={{ borderColor: '#3a3a3a' }}
+          style={{ borderColor: 'var(--border-muted)' }}
         >
           Reset
         </button>
@@ -77,7 +77,7 @@ export function Bingo() {
 
       {/* Progress bar */}
       <div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#2a2a2a' }}>
+        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border-default)' }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -101,10 +101,10 @@ export function Bingo() {
               style={{
                 backgroundColor: card.checked
                   ? `${color}25`
-                  : '#1a1a1a',
+                  : 'var(--bg-card)',
                 borderColor: card.checked
                   ? `${color}60`
-                  : '#2a2a2a',
+                  : 'var(--border-default)',
                 transform: card.checked ? 'scale(0.97)' : 'scale(1)',
               }}
             >
@@ -119,7 +119,7 @@ export function Bingo() {
               <div className="relative z-10 h-full flex flex-col items-center justify-center gap-1">
                 <span
                   className="text-xs leading-tight font-medium"
-                  style={{ color: card.checked ? color : '#9ca3af' }}
+                  style={{ color: card.checked ? color : 'var(--text-secondary)' }}
                 >
                   {card.text}
                 </span>

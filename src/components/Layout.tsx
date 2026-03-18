@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useState } from 'react'
+import { useTheme } from 'next-themes'
 import { CommandPalette } from '@/components/CommandPalette'
 
 const navItems = [
@@ -30,9 +31,10 @@ const mobileMainItems = navItems.slice(0, 5)
 
 export function Layout() {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#0f0f0f' }}>
+    <div className="min-h-screen flex" style={{ backgroundColor: 'var(--bg-base)' }}>
       <CommandPalette />
 
       {/* ── Desktop Sidebar ── */}
@@ -41,7 +43,7 @@ export function Layout() {
         style={{
           width: '56px',
           borderRight: '1px solid #2a2a2a',
-          backgroundColor: '#111111',
+          backgroundColor: 'var(--bg-sidebar)',
         }}
         onMouseEnter={e => { e.currentTarget.style.width = '220px' }}
         onMouseLeave={e => { e.currentTarget.style.width = '56px' }}
@@ -49,7 +51,7 @@ export function Layout() {
         {/* Logo */}
         <div
           className="flex items-center h-14 px-3.5 flex-shrink-0 overflow-hidden border-b"
-          style={{ borderColor: '#2a2a2a' }}
+          style={{ borderColor: 'var(--border-default)' }}
         >
           <span className="text-lg font-black text-red-600 flex-shrink-0">F1</span>
           <div className="ml-2.5 overflow-hidden whitespace-nowrap opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 delay-75">
@@ -93,11 +95,20 @@ export function Layout() {
           ))}
         </nav>
 
-        {/* Bottom: Search hint */}
+        {/* Bottom: Theme toggle + Search hint */}
         <div
           className="flex-shrink-0 border-t overflow-hidden"
-          style={{ borderColor: '#2a2a2a' }}
+          style={{ borderColor: 'var(--border-default)' }}
         >
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="flex items-center h-10 w-full px-3.5 text-gray-600 hover:text-gray-300 transition-colors overflow-hidden whitespace-nowrap"
+          >
+            <span className="text-base flex-shrink-0 w-7 text-center">{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <span className="ml-2 text-xs overflow-hidden opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 delay-75">
+              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            </span>
+          </button>
           <button
             onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))}
             className="flex items-center h-10 w-full px-3.5 text-gray-600 hover:text-gray-300 transition-colors overflow-hidden whitespace-nowrap"
@@ -105,7 +116,7 @@ export function Layout() {
             <span className="text-base flex-shrink-0 w-7 text-center">🔍</span>
             <span className="ml-2 text-xs overflow-hidden opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-150 delay-75">
               Search
-              <kbd className="ml-2 text-gray-600 border rounded px-1 text-xs" style={{ borderColor: '#3a3a3a' }}>⌘K</kbd>
+              <kbd className="ml-2 text-gray-600 border rounded px-1 text-xs" style={{ borderColor: 'var(--border-muted)' }}>⌘K</kbd>
             </span>
           </button>
         </div>
@@ -121,7 +132,7 @@ export function Layout() {
       {/* ── Mobile bottom tab bar ── */}
       <nav
         className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center border-t"
-        style={{ backgroundColor: '#111111', borderColor: '#2a2a2a', height: '56px' }}
+        style={{ backgroundColor: 'var(--bg-sidebar)', borderColor: 'var(--border-default)', height: '56px' }}
       >
         {mobileMainItems.map(item => (
           <NavLink
@@ -153,17 +164,17 @@ export function Layout() {
       {mobileMoreOpen && (
         <div
           className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+          style={{ backgroundColor: 'var(--overlay)' }}
           onClick={() => setMobileMoreOpen(false)}
         >
           <div
             className="rounded-t-2xl border-t overflow-y-auto"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#3a3a3a', maxHeight: '70vh' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)', maxHeight: '70vh' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full" style={{ backgroundColor: '#3a3a3a' }} />
+              <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--border-muted)' }} />
             </div>
             <div className="grid grid-cols-4 gap-1 p-3 pb-8">
               {navItems.slice(5).map(item => (
@@ -183,6 +194,13 @@ export function Layout() {
                   <span className="text-center leading-tight px-1">{item.label}</span>
                 </NavLink>
               ))}
+              <button
+                onClick={() => { setTheme(theme === 'dark' ? 'light' : 'dark'); setMobileMoreOpen(false) }}
+                className="flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-colors text-gray-400 hover:bg-white/5 hover:text-white"
+              >
+                <span className="text-2xl">{theme === 'dark' ? '☀️' : '🌙'}</span>
+                <span className="text-center leading-tight px-1">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+              </button>
             </div>
           </div>
         </div>

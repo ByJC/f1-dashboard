@@ -12,6 +12,7 @@ import {
   fetchDriverSeasonStanding,
   fetchDriverInfo,
 } from '@/api/jolpica'
+import { fetchStints, fetchSessions, fetchWeather, fetchTeamRadio } from '@/api/openf1'
 
 const STALE_TIME = 1000 * 60 * 30 // 30 minutes
 
@@ -104,5 +105,40 @@ export function useDriverInfo(driverId: string) {
     queryFn: () => fetchDriverInfo(driverId),
     staleTime: STALE_TIME,
     enabled: Boolean(driverId),
+  })
+}
+
+export function useOpenF1Sessions(year: number) {
+  return useQuery({
+    queryKey: ['openf1Sessions', year],
+    queryFn: () => fetchSessions(year),
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1Stints(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1Stints', sessionKey],
+    queryFn: () => fetchStints(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1Weather(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1Weather', sessionKey],
+    queryFn: () => fetchWeather(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1TeamRadio(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1TeamRadio', sessionKey],
+    queryFn: () => fetchTeamRadio(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
   })
 }

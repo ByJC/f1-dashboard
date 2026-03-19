@@ -1,14 +1,67 @@
-import { useSchedule } from '@/hooks/useF1Data'
+import { useMemo } from 'react'
+import { useQueries } from '@tanstack/react-query'
+import { useSchedule, useOpenF1Sessions } from '@/hooks/useF1Data'
 import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import { formatDate, isSprintWeekend, getCountryCode } from '@/utils'
+import { fetchWeather } from '@/api/openf1'
+import { motion } from 'framer-motion'
+
+const STALE_TIME = 1000 * 60 * 30
 
 export function Calendar() {
   const { data: schedule, isLoading, error } = useSchedule()
+  const { data: openF1Sessions } = useOpenF1Sessions(2026)
+
+  const now = new Date()
+
+  // Build locality → session_key map from OpenF1 sessions
+  const localityToSessionKey = useMemo(() => {
+    if (!openF1Sessions) return {} as Record<string, number>
+    return Object.fromEntries(
+      openF1Sessions.map(s => [s.location.toLowerCase(), s.session_key])
+    ) as Record<string, number>
+  }, [openF1Sessions])
+
+  // Completed races with their session keys
+  const completedWithKeys = useMemo(() => {
+    if (!schedule) return []
+    return schedule
+      .filter(r => new Date(r.date) < now)
+      .map(r => ({
+        round: r.round,
+        sessionKey: localityToSessionKey[r.Circuit.Location.locality.toLowerCase()] ?? null,
+      }))
+      .filter(r => r.sessionKey !== null) as Array<{ round: string; sessionKey: number }>
+  }, [schedule, localityToSessionKey])
+
+  // Fetch weather for all completed races
+  const weatherQueries = useQueries({
+    queries: completedWithKeys.map(({ sessionKey, round }) => ({
+      queryKey: ['openf1Weather', sessionKey],
+      queryFn: async () => {
+        const data = await fetchWeather(sessionKey)
+        return { round, weather: data }
+      },
+      staleTime: STALE_TIME,
+    })),
+  })
+
+  // Build round → weather summary
+  const weatherByRound = useMemo(() => {
+    const map: Record<string, { airTemp: number; trackTemp: number; rainfall: boolean }> = {}
+    weatherQueries.forEach(q => {
+      if (!q.data || q.data.weather.length === 0) return
+      const { round, weather } = q.data
+      const avgAir = weather.reduce((s, w) => s + w.air_temperature, 0) / weather.length
+      const avgTrack = weather.reduce((s, w) => s + w.track_temperature, 0) / weather.length
+      const hasRain = weather.some(w => w.rainfall > 0)
+      map[round] = { airTemp: Math.round(avgAir), trackTemp: Math.round(avgTrack), rainfall: hasRain }
+    })
+    return map
+  }, [weatherQueries])
 
   if (isLoading) return <LoadingSpinner message="Loading calendar..." />
   if (error) return <ErrorMessage message={(error as Error).message} />
-
-  const now = new Date()
 
   return (
     <div className="space-y-6">
@@ -21,11 +74,14 @@ export function Calendar() {
           const isNext = !isPast && schedule.find(r => new Date(r.date) >= now) === race
           const isSprint = race.Sprint !== undefined || isSprintWeekend(race.raceName)
           const countryCode = getCountryCode(race.Circuit.Location.country)
+          const weather = weatherByRound[race.round]
 
           return (
-            <div
+            <motion.div
               key={race.round}
-              className="rounded-xl border overflow-hidden transition-all"
+              whileHover={{ scale: 1.02, y: -2 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+              className="rounded-xl border overflow-hidden"
               style={{
                 backgroundColor: 'var(--bg-card)',
                 borderColor: isNext ? '#e10600' : isPast ? 'var(--border-default)' : 'var(--border-muted)',
@@ -100,8 +156,16 @@ export function Calendar() {
                     <span className="text-white">{formatDate(race.date)}</span>
                   </div>
                 </div>
+
+                {/* Weather badge for past races */}
+                {isPast && weather && (
+                  <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                    <span>🌡️ {weather.airTemp}°/{weather.trackTemp}°C</span>
+                    {weather.rainfall && <span>💧</span>}
+                  </div>
+                )}
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>

@@ -2,6 +2,7 @@ import { useRaceResults, useDriverStandings, useQualifyingResults } from '@/hook
 import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import { getDriverByCode, getTeamByConstructorId } from '@/utils'
 import type { DriverInfo, TeamInfo } from '@/types/f1'
+import { motion } from 'framer-motion'
 
 interface StatCardProps {
   label: string
@@ -13,7 +14,9 @@ interface StatCardProps {
 
 function StatCard({ label, value, subtitle, color, wide = false }: StatCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02, y: -2 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className={`rounded-xl border p-5 flex flex-col gap-2 ${wide ? 'col-span-2' : ''}`}
       style={{
         backgroundColor: 'var(--bg-card)',
@@ -26,13 +29,15 @@ function StatCard({ label, value, subtitle, color, wide = false }: StatCardProps
         {value}
       </p>
       <p className="text-xs text-gray-400 leading-relaxed">{subtitle}</p>
-    </div>
+    </motion.div>
   )
 }
 
 function FunCard({ label, value, subtitle, color }: StatCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02, y: -2 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className="rounded-xl border p-5 flex flex-col gap-2"
       style={{
         backgroundColor: 'var(--bg-card)',
@@ -45,7 +50,7 @@ function FunCard({ label, value, subtitle, color }: StatCardProps) {
         {value}
       </p>
       <p className="text-xs text-gray-400 leading-relaxed">{subtitle}</p>
-    </div>
+    </motion.div>
   )
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Command } from 'cmdk'
 import { useNavigate } from 'react-router-dom'
 import { drivers, teams } from '@/utils'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const PAGES = [
   { label: 'Overview', path: '/', icon: '🏁', group: 'Pages' },
@@ -48,18 +49,26 @@ export function CommandPalette() {
     setSearch('')
   }
 
-  if (!open) return null
-
   return (
-    <div
+    <AnimatePresence>
+      {open && (
+    <motion.div
       className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]"
       style={{ backgroundColor: 'var(--overlay)', backdropFilter: 'blur(4px)' }}
       onClick={() => setOpen(false)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
     >
-      <div
+      <motion.div
         className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
         style={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a' }}
         onClick={e => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.95, y: -8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -8 }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
       >
         <Command label="F1 Dashboard Search">
           <div className="flex items-center gap-3 px-4 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
@@ -139,7 +148,9 @@ export function CommandPalette() {
             <span><kbd className="border rounded px-1" style={{ borderColor: 'var(--border-muted)' }}>⌘K</kbd> toggle</span>
           </div>
         </Command>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

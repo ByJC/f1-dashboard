@@ -303,7 +303,7 @@ export function DriverProfile() {
                   contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
                   labelStyle={{ color: 'var(--text-primary)' }}
                 />
-                <Bar dataKey="points" fill={driverColor} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="points" fill={driverColor} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -324,7 +324,7 @@ export function DriverProfile() {
                     contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
                     labelStyle={{ color: 'var(--text-primary)' }}
                   />
-                  <Bar dataKey="wins" fill={driverColor} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="wins" fill={driverColor} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -353,6 +353,9 @@ export function DriverProfile() {
                     strokeWidth={2}
                     dot={{ fill: driverColor, r: 3 }}
                     activeDot={{ r: 5 }}
+                    isAnimationActive
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 </LineChart>
               </ResponsiveContainer>

@@ -5,6 +5,10 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+
+const tableVariants = { visible: { transition: { staggerChildren: 0.04 } } }
+const rowVariants = { hidden: { opacity: 0, x: -12 }, visible: { opacity: 1, x: 0 } }
 
 export function DriverStandings() {
   const { data: standings, isLoading, error } = useDriverStandings()
@@ -81,6 +85,9 @@ export function DriverStandings() {
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 4 }}
+                    isAnimationActive
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 )
               })}
@@ -102,14 +109,15 @@ export function DriverStandings() {
                 <th className="text-right px-4 py-3 text-gray-500 font-semibold">Points</th>
               </tr>
             </thead>
-            <tbody>
+            <motion.tbody variants={tableVariants} initial="hidden" animate="visible">
               {standings?.map((s, i) => {
                 const driver = getDriverByCode(s.Driver.code ?? s.Driver.driverId)
                 const team = getTeamByConstructorId(s.Constructors[0]?.constructorId ?? '')
 
                 return (
-                  <tr
+                  <motion.tr
                     key={s.Driver.driverId}
+                    variants={rowVariants}
                     className="transition-colors hover:bg-white/3"
                     style={{ borderBottom: '1px solid #1f1f1f' }}
                   >
@@ -155,7 +163,7 @@ export function DriverStandings() {
                     <td className="px-4 py-3 text-right">
                       <span className="text-white font-bold font-mono text-base">{s.points}</span>
                     </td>
-                  </tr>
+                  </motion.tr>
                 )
               })}
               {(!standings || standings.length === 0) && (
@@ -165,7 +173,7 @@ export function DriverStandings() {
                   </td>
                 </tr>
               )}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
       </div>

@@ -2,6 +2,12 @@ import { useSchedule, useDriverStandings, useConstructorStandings } from '@/hook
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { getDriverByCode, getTeamByConstructorId, formatDate, isSprintWeekend } from '@/utils'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+
+const cardHover = {
+  whileHover: { scale: 1.02, y: -2 } as const,
+  transition: { type: 'spring' as const, stiffness: 350, damping: 25 },
+}
 
 export function Home() {
   const { data: schedule, isLoading: scheduleLoading } = useSchedule()
@@ -44,6 +50,7 @@ export function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {/* Next Race */}
           {upcoming && (
+            <motion.div {...cardHover}>
             <Link
               to="/calendar"
               className="block rounded-xl p-5 border transition-colors hover:border-red-600/50"
@@ -75,10 +82,12 @@ export function Home() {
                 )}
               </div>
             </Link>
+            </motion.div>
           )}
 
           {/* Last Race */}
           {lastRace && (
+            <motion.div {...cardHover}>
             <Link
               to="/results/races"
               className="block rounded-xl p-5 border transition-colors hover:border-gray-600"
@@ -107,10 +116,12 @@ export function Home() {
                 </div>
               )}
             </Link>
+            </motion.div>
           )}
 
           {/* Season progress */}
-          <div
+          <motion.div
+            {...cardHover}
             className="rounded-xl p-5 border"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
@@ -137,7 +148,7 @@ export function Home() {
             <p className="text-xs text-gray-500 mt-2">
               {completedRaces} done · {totalRaces - completedRaces} remaining
             </p>
-          </div>
+          </motion.div>
         </div>
       )}
 

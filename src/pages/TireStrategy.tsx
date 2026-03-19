@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useSchedule, useRaceResults } from '@/hooks/useF1Data'
+import { useSchedule, useRaceResults, useOpenF1Sessions, useOpenF1Stints } from '@/hooks/useF1Data'
 import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
-import { getDriverByCode, getTeamByConstructorId } from '@/utils'
+import { getDriverByCode, getTeamByConstructorId, drivers } from '@/utils'
+import type { OpenF1Stint } from '@/api/openf1'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,11 +29,12 @@ interface JolpicaPitStopResponse {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COMPOUND_COLORS: Record<string, { bg: string; label: string }> = {
-  SOFT:         { bg: '#e10600', label: 'Soft' },
-  MEDIUM:       { bg: '#fbbf24', label: 'Medium' },
-  HARD:         { bg: '#d1d5db', label: 'Hard' },
-  INTERMEDIATE: { bg: '#22c55e', label: 'Inter' },
-  WET:          { bg: '#3b82f6', label: 'Wet' },
+  SOFT:         { bg: '#e8002d', label: 'Soft' },
+  MEDIUM:       { bg: '#ffd600', label: 'Medium' },
+  HARD:         { bg: '#f0f0ec', label: 'Hard' },
+  INTERMEDIATE: { bg: '#39b54a', label: 'Inter' },
+  WET:          { bg: '#0067ff', label: 'Wet' },
+  UNKNOWN:      { bg: '#6b7280', label: 'Unknown' },
 }
 
 const STALE_TIME = 1000 * 60 * 30
@@ -61,6 +63,7 @@ function usePitStops(round: string | null) {
 export function TireStrategy() {
   const { data: schedule, isLoading: schedLoading, error: schedError } = useSchedule()
   const { data: raceResults, isLoading: resultsLoading, error: resultsError } = useRaceResults()
+  const { data: openF1Sessions } = useOpenF1Sessions(2026)
 
   const now = new Date()
   const completedRaces = useMemo(
@@ -74,6 +77,22 @@ export function TireStrategy() {
   const activeRound = selectedRound ?? completedRaces[completedRaces.length - 1]?.round ?? null
 
   const { data: pitStops, isLoading: pitLoading, error: pitError } = usePitStops(activeRound)
+
+  // Find the active race info
+  const activeRace = completedRaces.find(r => r.round === activeRound)
+
+  // Find matching OpenF1 session key for the active race
+  const sessionKey = useMemo(() => {
+    if (!openF1Sessions || !activeRace) return null
+    const match = openF1Sessions.find(
+      s =>
+        s.location.toLowerCase() === activeRace.Circuit.Location.locality.toLowerCase() ||
+        s.country_name.toLowerCase() === activeRace.Circuit.Location.country.toLowerCase(),
+    )
+    return match?.session_key ?? null
+  }, [openF1Sessions, activeRace])
+
+  const { data: openF1Stints } = useOpenF1Stints(sessionKey)
 
   const isLoading = schedLoading || resultsLoading
   const error = schedError || resultsError
@@ -103,7 +122,38 @@ export function TireStrategy() {
     ? Math.max(...selectedRaceResult.Results.map(r => parseInt(r.laps) || 0))
     : 70
 
-  // Group pit stops by driver
+  // Build driver number → driverId map from local drivers data
+  const numberToDriverId = useMemo(() => {
+    const map: Record<number, string> = {}
+    drivers.forEach(d => {
+      if (d.number != null) map[parseInt(d.number)] = d.id
+    })
+    // Also add from race results permanentNumber for accuracy
+    selectedRaceResult?.Results?.forEach(r => {
+      if (r.Driver.permanentNumber) {
+        map[parseInt(r.Driver.permanentNumber)] = r.Driver.driverId
+      }
+    })
+    return map
+  }, [selectedRaceResult])
+
+  // Group OpenF1 stints by driverId
+  const openF1StintsByDriver = useMemo<Record<string, OpenF1Stint[]>>(() => {
+    if (!openF1Stints) return {}
+    const acc: Record<string, OpenF1Stint[]> = {}
+    openF1Stints.forEach(stint => {
+      const driverId = numberToDriverId[stint.driver_number]
+      if (driverId) {
+        if (!acc[driverId]) acc[driverId] = []
+        acc[driverId].push(stint)
+      }
+    })
+    return acc
+  }, [openF1Stints, numberToDriverId])
+
+  const hasOpenF1Data = Object.keys(openF1StintsByDriver).length > 0
+
+  // Group pit stops by driver (fallback)
   const pitsByDriver = useMemo<Record<string, JolpicaPitStop[]>>(() => {
     if (!pitStops) return {}
     const acc: Record<string, JolpicaPitStop[]> = {}
@@ -114,7 +164,6 @@ export function TireStrategy() {
     return acc
   }, [pitStops])
 
-  // Build synthetic stints from pit stop data
   const driverOrder = selectedRaceResult?.Results?.map(r => r.Driver.driverId) ?? Object.keys(pitsByDriver)
 
   return (
@@ -143,14 +192,19 @@ export function TireStrategy() {
       </div>
 
       {activeRound && (
-        <div className="text-sm text-gray-400">
-          {completedRaces.find(r => r.round === activeRound)?.raceName}
+        <div className="flex items-center gap-3 text-sm text-gray-400">
+          <span>{completedRaces.find(r => r.round === activeRound)?.raceName}</span>
+          {hasOpenF1Data && (
+            <span className="text-xs px-2 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20">
+              Live compound data
+            </span>
+          )}
         </div>
       )}
 
       {/* Compound legend */}
       <div className="flex flex-wrap gap-3">
-        {Object.entries(COMPOUND_COLORS).map(([key, val]) => (
+        {Object.entries(COMPOUND_COLORS).filter(([k]) => k !== 'UNKNOWN').map(([key, val]) => (
           <div key={key} className="flex items-center gap-1.5 text-xs text-gray-400">
             <span
               className="w-3 h-3 rounded-sm flex-shrink-0"
@@ -184,19 +238,57 @@ export function TireStrategy() {
         >
           <div className="p-4 space-y-1 overflow-x-auto">
             {driverOrder.map(driverId => {
-              const stops = pitsByDriver[driverId]
-              if (!stops && driverOrder === Object.keys(pitsByDriver)) return null
-
               const result = selectedRaceResult?.Results?.find(r => r.Driver.driverId === driverId)
               const driver = getDriverByCode(result?.Driver.code ?? driverId) ?? getDriverByCode(driverId)
               const team = result ? getTeamByConstructorId(result.Constructor.constructorId) : undefined
 
-              // Build stints from pit stops
+              const driverColor = driver?.color ?? team?.color ?? '#6b7280'
+              const driverName = driver
+                ? `${driver.firstName[0]}. ${driver.lastName}`
+                : result
+                ? `${result.Driver.givenName[0]}. ${result.Driver.familyName}`
+                : driverId
+
+              // Use OpenF1 stints if available, otherwise fall back to Jolpica pit stops
+              if (hasOpenF1Data) {
+                const stints = (openF1StintsByDriver[driverId] ?? []).sort(
+                  (a, b) => a.stint_number - b.stint_number,
+                )
+                if (stints.length === 0) return null
+
+                return (
+                  <div key={driverId} className="flex items-center gap-2 min-w-[600px]">
+                    <div className="flex items-center gap-1.5 w-28 flex-shrink-0">
+                      <span className="w-1 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: driverColor }} />
+                      <span className="text-xs text-gray-300 truncate">{driverName}</span>
+                    </div>
+                    <div className="flex items-center gap-0 flex-1 h-6 relative">
+                      {stints.map((stint, idx) => {
+                        const lapCount = (stint.lap_end - stint.lap_start) + 1
+                        const widthPct = (lapCount / totalLaps) * 100
+                        const compound = stint.compound?.toUpperCase() ?? 'UNKNOWN'
+                        const color = COMPOUND_COLORS[compound]?.bg ?? COMPOUND_COLORS.UNKNOWN.bg
+
+                        return (
+                          <div key={idx} className="flex items-center h-full" style={{ width: `${widthPct}%` }}>
+                            <div
+                              className="h-5 rounded-sm flex-1"
+                              style={{ backgroundColor: color, opacity: 0.85, marginRight: idx < stints.length - 1 ? '1px' : 0 }}
+                              title={`${COMPOUND_COLORS[compound]?.label ?? compound}: L${stint.lap_start}–${stint.lap_end} (${lapCount} laps, age ${stint.tyre_age_at_start})`}
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <span className="text-xs text-gray-600 w-6 text-right flex-shrink-0">{stints.length}</span>
+                  </div>
+                )
+              }
+
+              // Fallback: Jolpica pit stop based stints
               const driverStops = (pitsByDriver[driverId] ?? []).sort(
                 (a, b) => parseInt(a.lap) - parseInt(b.lap),
               )
-
-              // Synthesize stints: assume compound is unknown (no compound data from Jolpica)
               const stintBoundaries = [1, ...driverStops.map(p => parseInt(p.lap)), totalLaps + 1]
               const stints = stintBoundaries
                 .slice(0, -1)
@@ -207,28 +299,16 @@ export function TireStrategy() {
                   stopAfter: i < driverStops.length ? driverStops[i] : null,
                 }))
 
-              const driverColor = driver?.color ?? team?.color ?? '#6b7280'
-              const driverName = driver
-                ? `${driver.firstName[0]}. ${driver.lastName}`
-                : result
-                ? `${result.Driver.givenName[0]}. ${result.Driver.familyName}`
-                : driverId
+              if (stints.length === 0) return null
 
               return (
                 <div key={driverId} className="flex items-center gap-2 min-w-[600px]">
-                  {/* Driver name */}
                   <div className="flex items-center gap-1.5 w-28 flex-shrink-0">
-                    <span
-                      className="w-1 h-4 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: driverColor }}
-                    />
+                    <span className="w-1 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: driverColor }} />
                     <span className="text-xs text-gray-300 truncate">{driverName}</span>
                   </div>
-
-                  {/* Stint bars */}
                   <div className="flex items-center gap-0 flex-1 h-6 relative">
                     {stints.map((stint, idx) => {
-                      // Assign alternating compound colors since Jolpica doesn't provide compound
                       const compoundKeys = ['SOFT', 'MEDIUM', 'HARD', 'MEDIUM', 'SOFT']
                       const compound = compoundKeys[idx % compoundKeys.length]
                       const color = COMPOUND_COLORS[compound]?.bg ?? '#6b7280'
@@ -238,11 +318,7 @@ export function TireStrategy() {
                         <div key={idx} className="flex items-center h-full" style={{ width: `${widthPct}%` }}>
                           <div
                             className="h-5 rounded-sm flex-1"
-                            style={{
-                              backgroundColor: color,
-                              opacity: 0.8,
-                              marginRight: stint.stopAfter ? '0' : '0',
-                            }}
+                            style={{ backgroundColor: color, opacity: 0.8 }}
                             title={`Stint ${idx + 1}: laps ${stint.start}–${stint.end}`}
                           />
                           {stint.stopAfter && (
@@ -256,11 +332,7 @@ export function TireStrategy() {
                       )
                     })}
                   </div>
-
-                  {/* Pit stop count */}
-                  <span className="text-xs text-gray-600 w-6 text-right flex-shrink-0">
-                    {driverStops.length}
-                  </span>
+                  <span className="text-xs text-gray-600 w-6 text-right flex-shrink-0">{driverStops.length}</span>
                 </div>
               )
             })}
@@ -277,9 +349,11 @@ export function TireStrategy() {
         </div>
       )}
 
-      <p className="text-xs text-gray-600">
-        Note: Compound data is not available from Jolpica. Stints are shown with alternating placeholder colors based on stop count. For real compound data, integrate OpenF1 API.
-      </p>
+      {!hasOpenF1Data && (
+        <p className="text-xs text-gray-600">
+          Note: Compound data not available from OpenF1 for this race. Showing alternating placeholder colors based on pit stop count.
+        </p>
+      )}
     </div>
   )
 }

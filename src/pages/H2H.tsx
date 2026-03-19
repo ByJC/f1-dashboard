@@ -326,8 +326,8 @@ export function H2H() {
                       drivers.find(d => d.id === value)?.code ?? value
                     }
                   />
-                  <Bar dataKey={d1.id} fill={d1.color} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey={d2.id} fill={d2.color} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey={d1.id} fill={d1.color} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
+                  <Bar dataKey={d2.id} fill={d2.color} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

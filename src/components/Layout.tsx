@@ -1,7 +1,8 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useTheme } from 'next-themes'
 import { CommandPalette } from '@/components/CommandPalette'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const navItems = [
   { path: '/', label: 'Overview', icon: '🏁', end: true },
@@ -32,6 +33,7 @@ const mobileMainItems = navItems.slice(0, 5)
 export function Layout() {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+  const location = useLocation()
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: 'var(--bg-base)' }}>
@@ -125,7 +127,18 @@ export function Layout() {
       {/* ── Main content ── */}
       <div className="flex-1 min-w-0 flex flex-col">
         <main className="flex-1 max-w-screen-2xl w-full mx-auto px-4 py-6 pb-24 lg:pb-6">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="flex-1"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -161,50 +174,60 @@ export function Layout() {
       </nav>
 
       {/* ── Mobile "More" drawer ── */}
-      {mobileMoreOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end"
-          style={{ backgroundColor: 'var(--overlay)' }}
-          onClick={() => setMobileMoreOpen(false)}
-        >
-          <div
-            className="rounded-t-2xl border-t overflow-y-auto"
-            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)', maxHeight: '70vh' }}
-            onClick={e => e.stopPropagation()}
+      <AnimatePresence>
+        {mobileMoreOpen && (
+          <motion.div
+            className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end"
+            style={{ backgroundColor: 'var(--overlay)' }}
+            onClick={() => setMobileMoreOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--border-muted)' }} />
-            </div>
-            <div className="grid grid-cols-4 gap-1 p-3 pb-8">
-              {navItems.slice(5).map(item => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMoreOpen(false)}
-                  className={({ isActive }) =>
-                    `flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-colors ${
-                      isActive
-                        ? 'bg-red-600/15 text-red-400 font-semibold'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                    }`
-                  }
+            <motion.div
+              className="rounded-t-2xl border-t overflow-y-auto"
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)', maxHeight: '70vh' }}
+              onClick={e => e.stopPropagation()}
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 350, damping: 35 }}
+            >
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--border-muted)' }} />
+              </div>
+              <div className="grid grid-cols-4 gap-1 p-3 pb-8">
+                {navItems.slice(5).map(item => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMoreOpen(false)}
+                    className={({ isActive }) =>
+                      `flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-colors ${
+                        isActive
+                          ? 'bg-red-600/15 text-red-400 font-semibold'
+                          : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                      }`
+                    }
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                    <span className="text-center leading-tight px-1">{item.label}</span>
+                  </NavLink>
+                ))}
+                <button
+                  onClick={() => { setTheme(theme === 'dark' ? 'light' : 'dark'); setMobileMoreOpen(false) }}
+                  className="flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-colors text-gray-400 hover:bg-white/5 hover:text-white"
                 >
-                  <span className="text-2xl">{item.icon}</span>
-                  <span className="text-center leading-tight px-1">{item.label}</span>
-                </NavLink>
-              ))}
-              <button
-                onClick={() => { setTheme(theme === 'dark' ? 'light' : 'dark'); setMobileMoreOpen(false) }}
-                className="flex flex-col items-center gap-1 py-3 rounded-xl text-xs transition-colors text-gray-400 hover:bg-white/5 hover:text-white"
-              >
-                <span className="text-2xl">{theme === 'dark' ? '☀️' : '🌙'}</span>
-                <span className="text-center leading-tight px-1">{theme === 'dark' ? 'Light' : 'Dark'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                  <span className="text-2xl">{theme === 'dark' ? '☀️' : '🌙'}</span>
+                  <span className="text-center leading-tight px-1">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

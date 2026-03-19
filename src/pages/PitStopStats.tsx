@@ -288,7 +288,7 @@ export function PitStopStats() {
                       tickFormatter={(v: number) => `${v}s`}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff08' }} />
-                    <Bar dataKey="avg" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="avg" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out">
                       {chartData.map((entry, i) => (
                         <Cell key={i} fill={entry.color} />
                       ))}

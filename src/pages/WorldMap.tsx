@@ -3,7 +3,28 @@ import 'leaflet/dist/leaflet.css'
 import { useSchedule, useRaceResults } from '@/hooks/useF1Data'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { formatDate, isSprintWeekend, getCountryCode } from '@/utils'
+import { useNavigate } from 'react-router-dom'
 import L from 'leaflet'
+
+const CIRCUIT_SVG_MAP: Record<string, string> = {
+  albert_park: 'australia',
+  bahrain: 'bahrain',
+  suzuka: 'japan',
+  shanghai: 'china',
+  monaco: 'monaco',
+  catalunya: 'spain',
+  red_bull_ring: 'austria',
+  silverstone: 'greatbritain',
+  hungaroring: 'hungary',
+  spa: 'belgium',
+  zandvoort: 'netherlands',
+  monza: 'italy',
+  baku: 'azerbaijan',
+  marina_bay: 'singapore',
+  rodriguez: 'mexico',
+  interlagos: 'brazil',
+  yas_marina: 'abudhabi',
+}
 
 // Fix Leaflet default icon in Vite
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +38,7 @@ L.Icon.Default.mergeOptions({
 export function WorldMap() {
   const { data: schedule, isLoading } = useSchedule()
   const { data: races } = useRaceResults()
+  const navigate = useNavigate()
 
   const now = new Date()
 
@@ -35,17 +57,17 @@ export function WorldMap() {
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-2xl font-black text-white">{schedule?.length ?? 0}</p>
           <p className="text-xs text-gray-500 mt-0.5">Total GPs</p>
         </div>
-        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-2xl font-black text-green-400">
             {schedule?.filter(r => new Date(r.date) < now).length ?? 0}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">Completed</p>
         </div>
-        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border p-3 text-center" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
           <p className="text-2xl font-black text-yellow-400">
             {schedule?.filter(r => r.Sprint !== undefined || isSprintWeekend(r.raceName)).length ?? 0}
           </p>
@@ -54,11 +76,11 @@ export function WorldMap() {
       </div>
 
       {/* Map */}
-      <div className="rounded-xl overflow-hidden border" style={{ borderColor: '#2a2a2a', height: 480 }}>
+      <div className="rounded-xl overflow-hidden border" style={{ borderColor: 'var(--border-default)', height: 480 }}>
         <MapContainer
           center={[20, 10]}
           zoom={2}
-          style={{ height: '100%', width: '100%', backgroundColor: '#0f0f0f' }}
+          style={{ height: '100%', width: '100%', backgroundColor: 'var(--bg-base)' }}
           scrollWheelZoom={false}
         >
           <TileLayer
@@ -90,7 +112,14 @@ export function WorldMap() {
                 }}
               >
                 <Popup>
-                  <div style={{ backgroundColor: '#1a1a1a', color: '#f5f5f5', padding: '8px', borderRadius: '8px', minWidth: 160 }}>
+                  <div style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', minWidth: 180 }}>
+                    {CIRCUIT_SVG_MAP[race.Circuit.circuitId] && (
+                      <img
+                        src={`/tracks/${CIRCUIT_SVG_MAP[race.Circuit.circuitId]}.svg`}
+                        alt={race.Circuit.circuitName}
+                        style={{ width: '100%', height: 80, objectFit: 'contain', filter: 'invert(1)', marginBottom: 6 }}
+                      />
+                    )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                       <img
                         src={`https://flagcdn.com/w20/${getCountryCode(race.Circuit.Location.country)}.png`}
@@ -99,10 +128,10 @@ export function WorldMap() {
                       />
                       <span style={{ fontWeight: 700, fontSize: 13 }}>R{race.round} · {race.raceName}</span>
                     </div>
-                    <p style={{ color: '#9ca3af', fontSize: 11, marginBottom: 4 }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 11, marginBottom: 4 }}>
                       {race.Circuit.circuitName}
                     </p>
-                    <p style={{ color: '#9ca3af', fontSize: 11, marginBottom: 4 }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 11, marginBottom: 4 }}>
                       📅 {formatDate(race.date)}
                     </p>
                     {isNext && (
@@ -120,6 +149,12 @@ export function WorldMap() {
                         SPRINT
                       </span>
                     )}
+                    <button
+                      onClick={() => navigate(`/circuits/${race.Circuit.circuitId}`)}
+                      style={{ marginTop: 8, display: 'block', width: '100%', padding: '4px 0', borderRadius: 4, backgroundColor: '#e1060015', color: '#ef4444', border: '1px solid #e1060030', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      View Circuit →
+                    </button>
                   </div>
                 </Popup>
               </CircleMarker>
@@ -145,11 +180,11 @@ export function WorldMap() {
       </div>
 
       {/* GP List */}
-      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-        <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+        <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
           <h2 className="font-bold text-white text-sm">Full Calendar</h2>
         </div>
-        <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+        <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
           {schedule?.map(race => {
             const isPast = new Date(race.date) < now
             const isNext = race === upcoming

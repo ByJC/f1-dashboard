@@ -11,7 +11,10 @@ import {
   fetchDriverCareerQualifying,
   fetchDriverSeasonStanding,
   fetchDriverInfo,
+  fetchCircuitResults,
+  fetchCircuitQualifying,
 } from '@/api/jolpica'
+import { fetchStints, fetchSessions, fetchWeather, fetchTeamRadio } from '@/api/openf1'
 
 const STALE_TIME = 1000 * 60 * 30 // 30 minutes
 
@@ -104,5 +107,80 @@ export function useDriverInfo(driverId: string) {
     queryFn: () => fetchDriverInfo(driverId),
     staleTime: STALE_TIME,
     enabled: Boolean(driverId),
+  })
+}
+
+export function useOpenF1Sessions(year: number) {
+  return useQuery({
+    queryKey: ['openf1Sessions', year],
+    queryFn: () => fetchSessions(year),
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1Stints(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1Stints', sessionKey],
+    queryFn: () => fetchStints(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1Weather(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1Weather', sessionKey],
+    queryFn: () => fetchWeather(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useOpenF1TeamRadio(sessionKey: number | null) {
+  return useQuery({
+    queryKey: ['openf1TeamRadio', sessionKey],
+    queryFn: () => fetchTeamRadio(sessionKey!),
+    enabled: sessionKey !== null,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useWikipediaPhoto(driverId: string) {
+  const { data: driverInfo } = useDriverInfo(driverId)
+
+  const wikiTitle = driverInfo?.url
+    ? driverInfo.url.split('/wiki/')[1]
+    : null
+
+  return useQuery({
+    queryKey: ['wikipediaPhoto', wikiTitle],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${wikiTitle}`
+      )
+      if (!res.ok) return null
+      const data = await res.json()
+      return (data.thumbnail?.source as string) ?? null
+    },
+    enabled: !!wikiTitle,
+    staleTime: STALE_TIME,
+  })
+}
+
+export function useCircuitResults(circuitId: string) {
+  return useQuery({
+    queryKey: ['circuitResults', circuitId],
+    queryFn: () => fetchCircuitResults(circuitId),
+    staleTime: STALE_TIME,
+    enabled: Boolean(circuitId),
+  })
+}
+
+export function useCircuitQualifying(circuitId: string) {
+  return useQuery({
+    queryKey: ['circuitQualifying', circuitId],
+    queryFn: () => fetchCircuitQualifying(circuitId),
+    staleTime: STALE_TIME,
+    enabled: Boolean(circuitId),
   })
 }

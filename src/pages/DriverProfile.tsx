@@ -16,6 +16,7 @@ import {
   useDriverCareerResults,
   useDriverCareerQualifying,
   useDriverAllSeasonStandings,
+  useWikipediaPhoto,
 } from '@/hooks/useF1Data'
 import { drivers, getDriver, getTeamByConstructorId } from '@/utils'
 import type { RaceResult, QualifyingResult } from '@/types/f1'
@@ -42,8 +43,8 @@ function StatCard({ label, value, subtitle, color }: StatCardProps) {
     <div
       className="rounded-xl border p-4 flex flex-col gap-1.5"
       style={{
-        backgroundColor: '#1a1a1a',
-        borderColor: '#2a2a2a',
+        backgroundColor: 'var(--bg-card)',
+        borderColor: 'var(--border-default)',
         borderLeft: `3px solid ${color}`,
       }}
     >
@@ -83,6 +84,8 @@ export function DriverProfile() {
 
   const localDriver = getDriver(effectiveDriverId)
   const driverColor = localDriver?.color ?? '#e10600'
+
+  const { data: photoUrl } = useWikipediaPhoto(effectiveDriverId)
 
   const raceResults = useMemo(
     () =>
@@ -186,10 +189,10 @@ export function DriverProfile() {
           value={effectiveDriverId}
           onChange={e => handleDriverChange(e.target.value)}
           className="rounded-lg border px-3 py-2 text-sm font-medium text-white cursor-pointer"
-          style={{ borderColor: '#3a3a3a', backgroundColor: '#1a1a1a' }}
+          style={{ borderColor: 'var(--border-muted)', backgroundColor: 'var(--bg-card)' }}
         >
           {drivers.map(d => (
-            <option key={d.id} value={d.id} style={{ backgroundColor: '#1a1a1a' }}>
+            <option key={d.id} value={d.id} style={{ backgroundColor: 'var(--bg-card)' }}>
               {d.firstName} {d.lastName}
             </option>
           ))}
@@ -201,17 +204,26 @@ export function DriverProfile() {
         <div
           className="rounded-xl border p-5 flex items-center gap-5"
           style={{
-            backgroundColor: '#1a1a1a',
-            borderColor: '#2a2a2a',
+            backgroundColor: 'var(--bg-card)',
+            borderColor: 'var(--border-default)',
             borderLeft: `4px solid ${driverColor}`,
           }}
         >
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black flex-shrink-0"
-            style={{ backgroundColor: `${driverColor}20`, color: driverColor }}
-          >
-            #{localDriver.number}
-          </div>
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={`${localDriver.firstName} ${localDriver.lastName}`}
+              className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+              style={{ border: `2px solid ${driverColor}` }}
+            />
+          ) : (
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black flex-shrink-0"
+              style={{ backgroundColor: `${driverColor}20`, color: driverColor }}
+            >
+              #{localDriver.number}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <img
@@ -291,7 +303,7 @@ export function DriverProfile() {
           {/* Points per season */}
           <div
             className="rounded-xl border p-5"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             <h2 className="text-sm font-semibold text-gray-400 mb-4">Points per Season</h2>
             <ResponsiveContainer width="100%" height={220}>
@@ -300,10 +312,10 @@ export function DriverProfile() {
                 <XAxis dataKey="season" tick={{ fill: '#6b7280', fontSize: 10 }} />
                 <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
-                  labelStyle={{ color: '#f5f5f5' }}
+                  contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                  labelStyle={{ color: 'var(--text-primary)' }}
                 />
-                <Bar dataKey="points" fill={driverColor} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="points" fill={driverColor} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -312,7 +324,7 @@ export function DriverProfile() {
           {winsPerSeason.length > 0 && (
             <div
               className="rounded-xl border p-5"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <h2 className="text-sm font-semibold text-gray-400 mb-4">Wins per Season</h2>
               <ResponsiveContainer width="100%" height={220}>
@@ -321,10 +333,10 @@ export function DriverProfile() {
                   <XAxis dataKey="season" tick={{ fill: '#6b7280', fontSize: 10 }} />
                   <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} allowDecimals={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
-                    labelStyle={{ color: '#f5f5f5' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                    labelStyle={{ color: 'var(--text-primary)' }}
                   />
-                  <Bar dataKey="wins" fill={driverColor} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="wins" fill={driverColor} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -334,7 +346,7 @@ export function DriverProfile() {
           {seasonPositions.length > 0 && (
             <div
               className="rounded-xl border p-5"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <h2 className="text-sm font-semibold text-gray-400 mb-4">Championship Position per Season</h2>
               <ResponsiveContainer width="100%" height={220}>
@@ -343,8 +355,8 @@ export function DriverProfile() {
                   <XAxis dataKey="season" tick={{ fill: '#6b7280', fontSize: 10 }} />
                   <YAxis reversed domain={[1, 'dataMax']} tick={{ fill: '#6b7280', fontSize: 10 }} allowDecimals={false} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
-                    labelStyle={{ color: '#f5f5f5' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                    labelStyle={{ color: 'var(--text-primary)' }}
                   />
                   <Line
                     type="monotone"
@@ -353,6 +365,9 @@ export function DriverProfile() {
                     strokeWidth={2}
                     dot={{ fill: driverColor, r: 3 }}
                     activeDot={{ r: 5 }}
+                    isAnimationActive
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -363,8 +378,8 @@ export function DriverProfile() {
 
       {/* Season history table */}
       {seasonStandings && seasonStandings.length > 0 && (
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h2 className="font-bold text-white text-sm">Season History ({seasonStandings.length} seasons)</h2>
           </div>
           <div className="overflow-x-auto">
@@ -419,7 +434,7 @@ export function DriverProfile() {
                                 pos === 1 ? '#ffd700'
                                 : pos === 2 ? '#c0c0c0'
                                 : pos === 3 ? '#cd7f32'
-                                : '#9ca3af',
+                                : 'var(--text-secondary)',
                             }}
                           >
                             P{standing.position}
@@ -438,8 +453,8 @@ export function DriverProfile() {
 
       {/* Wins table */}
       {winsList.length > 0 && (
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h2 className="font-bold text-white text-sm">Victories ({wins})</h2>
           </div>
           <div className="overflow-x-auto">

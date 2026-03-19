@@ -2,6 +2,7 @@ import { useRaceResults, useDriverStandings, useQualifyingResults } from '@/hook
 import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import { getDriverByCode, getTeamByConstructorId } from '@/utils'
 import type { DriverInfo, TeamInfo } from '@/types/f1'
+import { motion } from 'framer-motion'
 
 interface StatCardProps {
   label: string
@@ -13,11 +14,13 @@ interface StatCardProps {
 
 function StatCard({ label, value, subtitle, color, wide = false }: StatCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02, y: -2 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className={`rounded-xl border p-5 flex flex-col gap-2 ${wide ? 'col-span-2' : ''}`}
       style={{
-        backgroundColor: '#1a1a1a',
-        borderColor: '#2a2a2a',
+        backgroundColor: 'var(--bg-card)',
+        borderColor: 'var(--border-default)',
         borderLeft: `3px solid ${color}`,
       }}
     >
@@ -26,17 +29,19 @@ function StatCard({ label, value, subtitle, color, wide = false }: StatCardProps
         {value}
       </p>
       <p className="text-xs text-gray-400 leading-relaxed">{subtitle}</p>
-    </div>
+    </motion.div>
   )
 }
 
 function FunCard({ label, value, subtitle, color }: StatCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={{ scale: 1.02, y: -2 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className="rounded-xl border p-5 flex flex-col gap-2"
       style={{
-        backgroundColor: '#1a1a1a',
-        borderColor: '#2a2a2a',
+        backgroundColor: 'var(--bg-card)',
+        borderColor: 'var(--border-default)',
         borderTop: `3px solid ${color}`,
       }}
     >
@@ -45,7 +50,7 @@ function FunCard({ label, value, subtitle, color }: StatCardProps) {
         {value}
       </p>
       <p className="text-xs text-gray-400 leading-relaxed">{subtitle}</p>
-    </div>
+    </motion.div>
   )
 }
 
@@ -80,7 +85,7 @@ export function Records() {
         <h1 className="text-2xl font-black text-white">Season Records</h1>
         <div
           className="rounded-xl border p-10 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500">No race data yet. Records will appear after the first race.</p>
         </div>
@@ -497,7 +502,7 @@ export function Records() {
           </h2>
           <div
             className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             {Object.entries(winsMap)
               .sort((a, b) => b[1] - a[1])
@@ -513,10 +518,10 @@ export function Records() {
                     style={{ borderBottom: '1px solid #1f1f1f' }}
                   >
                     <div className="w-8 text-right font-mono font-bold text-white">{wins}</div>
-                    <div className="w-24 font-semibold text-sm" style={{ color: driver?.color ?? '#9ca3af' }}>
+                    <div className="w-24 font-semibold text-sm" style={{ color: driver?.color ?? 'var(--text-secondary)' }}>
                       {code}
                     </div>
-                    <div className="flex-1 h-2 rounded-full" style={{ backgroundColor: '#2a2a2a' }}>
+                    <div className="flex-1 h-2 rounded-full" style={{ backgroundColor: 'var(--border-default)' }}>
                       <div
                         className="h-2 rounded-full transition-all"
                         style={{ width: `${pct}%`, backgroundColor: driver?.color ?? '#e10600' }}

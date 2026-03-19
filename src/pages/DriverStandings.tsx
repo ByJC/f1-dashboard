@@ -5,6 +5,10 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+
+const tableVariants = { visible: { transition: { staggerChildren: 0.04 } } }
+const rowVariants = { hidden: { opacity: 0, x: -12 }, visible: { opacity: 1, x: 0 } }
 
 export function DriverStandings() {
   const { data: standings, isLoading, error } = useDriverStandings()
@@ -40,7 +44,7 @@ export function DriverStandings() {
         <button
           onClick={() => setShowChart(v => !v)}
           className="text-sm px-3 py-1.5 rounded-lg border transition-colors"
-          style={{ borderColor: '#3a3a3a', color: '#9ca3af' }}
+          style={{ borderColor: 'var(--border-muted)', color: 'var(--text-secondary)' }}
         >
           {showChart ? 'Hide Chart' : 'Show Chart'}
         </button>
@@ -50,7 +54,7 @@ export function DriverStandings() {
       {showChart && chartData.length > 0 && (
         <div
           className="rounded-xl border p-5"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <h2 className="text-sm font-semibold text-gray-400 mb-4">Points Evolution (Top 6)</h2>
           <ResponsiveContainer width="100%" height={280}>
@@ -59,8 +63,8 @@ export function DriverStandings() {
               <XAxis dataKey="race" tick={{ fill: '#6b7280', fontSize: 11 }} />
               <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: 8 }}
-                labelStyle={{ color: '#f5f5f5' }}
+                contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                labelStyle={{ color: 'var(--text-primary)' }}
               />
               <Legend
                 formatter={(value) => {
@@ -81,6 +85,9 @@ export function DriverStandings() {
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 4 }}
+                    isAnimationActive
+                    animationDuration={600}
+                    animationEasing="ease-out"
                   />
                 )
               })}
@@ -90,7 +97,7 @@ export function DriverStandings() {
       )}
 
       {/* Standings Table */}
-      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+      <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -102,14 +109,15 @@ export function DriverStandings() {
                 <th className="text-right px-4 py-3 text-gray-500 font-semibold">Points</th>
               </tr>
             </thead>
-            <tbody>
+            <motion.tbody variants={tableVariants} initial="hidden" animate="visible">
               {standings?.map((s, i) => {
                 const driver = getDriverByCode(s.Driver.code ?? s.Driver.driverId)
                 const team = getTeamByConstructorId(s.Constructors[0]?.constructorId ?? '')
 
                 return (
-                  <tr
+                  <motion.tr
                     key={s.Driver.driverId}
+                    variants={rowVariants}
                     className="transition-colors hover:bg-white/3"
                     style={{ borderBottom: '1px solid #1f1f1f' }}
                   >
@@ -155,7 +163,7 @@ export function DriverStandings() {
                     <td className="px-4 py-3 text-right">
                       <span className="text-white font-bold font-mono text-base">{s.points}</span>
                     </td>
-                  </tr>
+                  </motion.tr>
                 )
               })}
               {(!standings || standings.length === 0) && (
@@ -165,22 +173,22 @@ export function DriverStandings() {
                   </td>
                 </tr>
               )}
-            </tbody>
+            </motion.tbody>
           </table>
         </div>
       </div>
 
       {/* Points per race breakdown */}
       {raceResults && raceResults.length > 0 && standings && standings.length > 0 && (
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h2 className="font-bold text-white text-sm">Points per Race</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="text-xs whitespace-nowrap">
               <thead>
                 <tr style={{ borderBottom: '1px solid #2a2a2a' }}>
-                  <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: '#1a1a1a', minWidth: 140 }}>
+                  <th className="sticky left-0 px-3 py-2 text-left text-gray-500 font-semibold" style={{ backgroundColor: 'var(--bg-card)', minWidth: 140 }}>
                     Driver
                   </th>
                   {raceResults.map(r => (
@@ -198,7 +206,7 @@ export function DriverStandings() {
                     className="hover:bg-white/3"
                     style={{ borderBottom: '1px solid #1f1f1f' }}
                   >
-                    <td className="sticky left-0 px-3 py-2" style={{ backgroundColor: '#1a1a1a' }}>
+                    <td className="sticky left-0 px-3 py-2" style={{ backgroundColor: 'var(--bg-card)' }}>
                       <div className="flex items-center gap-1.5">
                         {(() => {
                           const driver = getDriverByCode(s.Driver.code ?? '')

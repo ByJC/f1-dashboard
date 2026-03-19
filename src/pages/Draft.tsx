@@ -82,8 +82,8 @@ function DriverCard({ driver, selected, canAdd, price, points, onToggle }: Drive
     <button
       className="rounded-xl border p-3 text-left transition-all relative overflow-hidden"
       style={{
-        backgroundColor: selected ? `${driver.color}15` : '#1a1a1a',
-        borderColor: selected ? driver.color : disabled ? '#1f1f1f' : '#2a2a2a',
+        backgroundColor: selected ? `${driver.color}15` : 'var(--bg-card)',
+        borderColor: selected ? driver.color : disabled ? 'var(--border-subtle)' : 'var(--border-default)',
         opacity: disabled ? 0.45 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
@@ -93,7 +93,7 @@ function DriverCard({ driver, selected, canAdd, price, points, onToggle }: Drive
       {selected && (
         <div
           className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
-          style={{ backgroundColor: driver.color, color: '#0f0f0f' }}
+          style={{ backgroundColor: driver.color, color: 'var(--bg-base)' }}
         >
           ✓
         </div>
@@ -188,7 +188,7 @@ export function Draft() {
         {myTeam.length > 0 && (
           <button
             className="text-xs px-3 py-1.5 rounded-lg border text-gray-500 hover:text-red-400 hover:border-red-900 transition-colors"
-            style={{ borderColor: '#3a3a3a' }}
+            style={{ borderColor: 'var(--border-muted)' }}
             onClick={clearTeam}
           >
             Clear team
@@ -199,7 +199,7 @@ export function Draft() {
       {/* Budget bar */}
       <div
         className="rounded-xl border p-5"
-        style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
       >
         <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div>
@@ -213,7 +213,7 @@ export function Draft() {
           </div>
           <p className="text-xs text-gray-600">Total: {TOTAL_BUDGET}M</p>
         </div>
-        <div className="h-2 rounded-full" style={{ backgroundColor: '#2a2a2a' }}>
+        <div className="h-2 rounded-full" style={{ backgroundColor: 'var(--border-default)' }}>
           <div
             className="h-2 rounded-full transition-all"
             style={{
@@ -229,7 +229,7 @@ export function Draft() {
         {/* My team */}
         <div
           className="rounded-xl border overflow-hidden"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div
             className="px-5 py-3 flex items-center justify-between"
@@ -250,7 +250,7 @@ export function Draft() {
               Pick 5 drivers from the grid below
             </div>
           ) : (
-            <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+            <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               {myTeam.map((driverId, i) => {
                 const driver = drivers.find(d => d.id === driverId)
                 if (!driver) return null
@@ -307,7 +307,7 @@ export function Draft() {
         {/* Optimal team */}
         <div
           className="rounded-xl border overflow-hidden"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div
             className="px-5 py-3 flex items-center justify-between"
@@ -331,7 +331,7 @@ export function Draft() {
               Optimal team will appear after races start
             </div>
           ) : (
-            <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+            <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               {optimal.map((driverId, i) => {
                 const driver = drivers.find(d => d.id === driverId)
                 if (!driver) return null
@@ -401,7 +401,7 @@ export function Draft() {
       {!noRaces && myTeam.length > 0 && (
         <div
           className="rounded-xl border p-5"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <h2 className="text-sm font-semibold text-gray-400 mb-4">Race-by-Race Points</h2>
           <div className="overflow-x-auto">

@@ -67,7 +67,7 @@ function StatRow({
       <div className="flex-1 text-right">
         <span
           className="font-mono font-bold text-lg"
-          style={{ color: d1Wins ? d1.color : '#9ca3af' }}
+          style={{ color: d1Wins ? d1.color : 'var(--text-secondary)' }}
         >
           {typeof v1 === 'number' && !Number.isInteger(v1) ? v1.toFixed(2) : v1}
         </span>
@@ -76,7 +76,7 @@ function StatRow({
       <div className="flex-1 text-left">
         <span
           className="font-mono font-bold text-lg"
-          style={{ color: d2Wins ? d2.color : '#9ca3af' }}
+          style={{ color: d2Wins ? d2.color : 'var(--text-secondary)' }}
         >
           {typeof v2 === 'number' && !Number.isInteger(v2) ? v2.toFixed(2) : v2}
         </span>
@@ -202,7 +202,7 @@ export function H2H() {
           <div
             key={idx}
             className="rounded-xl border p-4"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             <div
               className="h-1 rounded-full mb-3"
@@ -211,7 +211,7 @@ export function H2H() {
             <select
               className="w-full text-sm font-semibold rounded-lg px-3 py-2 outline-none"
               style={{
-                backgroundColor: '#0f0f0f',
+                backgroundColor: 'var(--bg-base)',
                 color: driver.color,
                 border: `1px solid ${driver.color}50`,
               }}
@@ -242,7 +242,7 @@ export function H2H() {
       {noRaces ? (
         <div
           className="rounded-xl border p-10 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500">No race results available yet. Check back after the first race.</p>
         </div>
@@ -251,7 +251,7 @@ export function H2H() {
           {/* Stats comparison */}
           <div
             className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             {/* Header */}
             <div
@@ -282,7 +282,7 @@ export function H2H() {
               <div className="flex-1 text-right">
                 <span
                   className="font-mono font-black text-3xl"
-                  style={{ color: h2hWins1 > h2hWins2 ? d1.color : '#9ca3af' }}
+                  style={{ color: h2hWins1 > h2hWins2 ? d1.color : 'var(--text-secondary)' }}
                 >
                   {h2hWins1}
                 </span>
@@ -293,7 +293,7 @@ export function H2H() {
               <div className="flex-1 text-left">
                 <span
                   className="font-mono font-black text-3xl"
-                  style={{ color: h2hWins2 > h2hWins1 ? d2.color : '#9ca3af' }}
+                  style={{ color: h2hWins2 > h2hWins1 ? d2.color : 'var(--text-secondary)' }}
                 >
                   {h2hWins2}
                 </span>
@@ -305,7 +305,7 @@ export function H2H() {
           {chartData.length > 0 && (
             <div
               className="rounded-xl border p-5"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <h2 className="text-sm font-semibold text-gray-400 mb-4">Points Per Race</h2>
               <ResponsiveContainer width="100%" height={240}>
@@ -315,19 +315,19 @@ export function H2H() {
                   <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1a1a1a',
+                      backgroundColor: 'var(--bg-card)',
                       border: '1px solid #3a3a3a',
                       borderRadius: 8,
                     }}
-                    labelStyle={{ color: '#f5f5f5' }}
+                    labelStyle={{ color: 'var(--text-primary)' }}
                   />
                   <Legend
                     formatter={(value: string) =>
                       drivers.find(d => d.id === value)?.code ?? value
                     }
                   />
-                  <Bar dataKey={d1.id} fill={d1.color} radius={[3, 3, 0, 0]} />
-                  <Bar dataKey={d2.id} fill={d2.color} radius={[3, 3, 0, 0]} />
+                  <Bar dataKey={d1.id} fill={d1.color} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
+                  <Bar dataKey={d2.id} fill={d2.color} radius={[3, 3, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -337,12 +337,12 @@ export function H2H() {
           {h2hRaces.length > 0 && (
             <div
               className="rounded-xl border overflow-hidden"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <div className="px-5 py-3" style={{ borderBottom: '1px solid #2a2a2a' }}>
                 <h2 className="font-bold text-white text-sm">Race-by-Race</h2>
               </div>
-              <div className="divide-y" style={{ borderColor: '#1f1f1f' }}>
+              <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
                 {h2hRaces.map(r => {
                   const d1Won = r.p1 < r.p2
                   return (
@@ -393,7 +393,7 @@ export function H2H() {
                   <div
                     key={team.id}
                     className="rounded-xl border overflow-hidden"
-                    style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+                    style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
                   >
                     <div
                       className="px-4 py-3 flex items-center gap-2"
@@ -405,7 +405,7 @@ export function H2H() {
                       />
                       <span className="font-semibold text-white text-sm">{team.shortName}</span>
                     </div>
-                    <div className="grid grid-cols-2 divide-x" style={{ borderColor: '#2a2a2a' }}>
+                    <div className="grid grid-cols-2 divide-x" style={{ borderColor: 'var(--border-default)' }}>
                       {teamDrivers.map(td => {
                         const tdStats = emptyStats()
                         if (races) {

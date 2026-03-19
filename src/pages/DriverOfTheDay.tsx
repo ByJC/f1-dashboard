@@ -53,8 +53,8 @@ export function DriverOfTheDay() {
               key={race.round}
               className="rounded-xl border overflow-hidden"
               style={{
-                backgroundColor: '#1a1a1a',
-                borderColor: dotdDriver ? `${dotdDriver.color}50` : '#2a2a2a',
+                backgroundColor: 'var(--bg-card)',
+                borderColor: dotdDriver ? `${dotdDriver.color}50` : 'var(--border-default)',
                 opacity: isPast ? 1 : 0.4,
               }}
             >
@@ -88,7 +88,7 @@ export function DriverOfTheDay() {
                       placeholder="VER"
                       maxLength={3}
                       className="w-full text-xs px-2 py-1 rounded bg-black border text-white font-mono uppercase"
-                      style={{ borderColor: '#3a3a3a' }}
+                      style={{ borderColor: 'var(--border-muted)' }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') saveDotd(race.round, inputVal)
                         if (e.key === 'Escape') setEditing(null)
@@ -142,8 +142,8 @@ export function DriverOfTheDay() {
 
       {/* DOTD Summary */}
       {Object.keys(dotdMap).length > 0 && (
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h2 className="font-bold text-white text-sm">DOTD Leaderboard</h2>
           </div>
           <div className="p-4">

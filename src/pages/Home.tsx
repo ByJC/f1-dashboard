@@ -2,6 +2,12 @@ import { useSchedule, useDriverStandings, useConstructorStandings } from '@/hook
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { getDriverByCode, getTeamByConstructorId, formatDate, isSprintWeekend } from '@/utils'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+
+const cardHover = {
+  whileHover: { scale: 1.02, y: -2 } as const,
+  transition: { type: 'spring' as const, stiffness: 350, damping: 25 },
+}
 
 export function Home() {
   const { data: schedule, isLoading: scheduleLoading } = useSchedule()
@@ -44,10 +50,11 @@ export function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {/* Next Race */}
           {upcoming && (
+            <motion.div {...cardHover}>
             <Link
               to="/calendar"
               className="block rounded-xl p-5 border transition-colors hover:border-red-600/50"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -75,14 +82,16 @@ export function Home() {
                 )}
               </div>
             </Link>
+            </motion.div>
           )}
 
           {/* Last Race */}
           {lastRace && (
+            <motion.div {...cardHover}>
             <Link
               to="/results/races"
               className="block rounded-xl p-5 border transition-colors hover:border-gray-600"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -107,12 +116,14 @@ export function Home() {
                 </div>
               )}
             </Link>
+            </motion.div>
           )}
 
           {/* Season progress */}
-          <div
+          <motion.div
+            {...cardHover}
             className="rounded-xl p-5 border"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
             <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-3">
               Season Progress
@@ -126,7 +137,7 @@ export function Home() {
                     key={race.round}
                     className="w-4 h-4 rounded-sm transition-all"
                     style={{
-                      backgroundColor: done ? '#e10600' : isNext ? '#e1060040' : '#2a2a2a',
+                      backgroundColor: done ? '#e10600' : isNext ? '#e1060040' : 'var(--border-default)',
                       border: isNext ? '1px solid #e10600' : '1px solid transparent',
                     }}
                     title={`R${race.round} ${race.raceName}`}
@@ -137,21 +148,79 @@ export function Home() {
             <p className="text-xs text-gray-500 mt-2">
               {completedRaces} done · {totalRaces - completedRaces} remaining
             </p>
-          </div>
+          </motion.div>
+
+          {/* Championship Battle */}
+          {driverStandings && driverStandings.length >= 2 && (() => {
+            const p1 = driverStandings[0]
+            const p2 = driverStandings[1]
+            const p1pts = parseFloat(p1.points)
+            const p2pts = parseFloat(p2.points)
+            const total = p1pts + p2pts
+            const gap = Math.round(p1pts - p2pts)
+            const remaining = totalRaces - completedRaces
+            const maxPointsLeft = remaining * 26
+            const p1Driver = getDriverByCode(p1.Driver.code ?? p1.Driver.driverId)
+            const p2Driver = getDriverByCode(p2.Driver.code ?? p2.Driver.driverId)
+            return (
+              <motion.div
+                {...cardHover}
+                className="rounded-xl p-5 border"
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
+              >
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-3">
+                  Championship Battle
+                </p>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-white font-bold text-sm">
+                      {p1.Driver.givenName} {p1.Driver.familyName}
+                    </p>
+                    <p className="text-xs text-gray-500">{p1.Constructors[0]?.name}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-white font-mono font-black">{p1pts}</p>
+                    <p className="text-xs font-bold" style={{ color: p1Driver?.color ?? '#e10600' }}>
+                      +{gap}pts
+                    </p>
+                  </div>
+                </div>
+                <div className="h-2 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--border-default)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: p1Driver?.color ?? '#e10600' }}
+                    initial={{ width: 0 }}
+                    animate={{ width: total > 0 ? `${(p1pts / total) * 100}%` : '50%' }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm" style={{ color: p2Driver?.color ?? '#6b7280' }}>
+                      {p2.Driver.givenName} {p2.Driver.familyName}
+                    </p>
+                    <p className="text-xs text-gray-600">{p2.Constructors[0]?.name}</p>
+                  </div>
+                  <p className="text-white font-mono font-bold text-sm">{p2pts}</p>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">{maxPointsLeft} pts left to distribute</p>
+              </motion.div>
+            )
+          })()}
         </div>
       )}
 
       {/* Standings Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Driver Standings */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h3 className="font-bold text-white">Driver Championship</h3>
             <Link to="/standings/drivers" className="text-xs text-red-400 hover:text-red-300">
               View all →
             </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+          <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
             {top3Drivers.map(s => {
               const driver = getDriverByCode(s.Driver.code ?? s.Driver.driverId)
               return (
@@ -182,14 +251,14 @@ export function Home() {
         </div>
 
         {/* Constructor Standings */}
-        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
-          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+        <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}>
+          <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
             <h3 className="font-bold text-white">Constructor Championship</h3>
             <Link to="/standings/constructors" className="text-xs text-red-400 hover:text-red-300">
               View all →
             </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+          <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
             {top3Constructors.map(s => {
               const team = getTeamByConstructorId(s.Constructor.constructorId)
               return (

@@ -64,7 +64,7 @@ function CustomTooltip({
   return (
     <div
       className="rounded-lg border px-3 py-2 text-xs"
-      style={{ backgroundColor: '#1a1a1a', borderColor: '#3a3a3a' }}
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-muted)' }}
     >
       <p className="text-white font-semibold">{label}</p>
       <p className="text-gray-400 mt-0.5">{payload[0].value.toFixed(3)}s avg</p>
@@ -78,10 +78,9 @@ export function PitStopStats() {
   const { data: schedule, isLoading: schedLoading, error: schedError } = useSchedule()
   const { data: raceResults, isLoading: resultsLoading, error: resultsError } = useRaceResults()
 
-  const now = new Date()
   const completedRaces = useMemo(
-    () => (schedule ?? []).filter(r => new Date(r.date) < now),
-    [schedule, now],
+    () => (schedule ?? []).filter(r => new Date(r.date) < new Date()),
+    [schedule],
   )
 
   // Build constructor map from race results
@@ -213,7 +212,7 @@ export function PitStopStats() {
         <PageHeader />
         <div
           className="rounded-xl border p-12 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <div className="text-4xl mb-3">🔧</div>
           <p className="text-gray-400 font-semibold">No completed races yet</p>
@@ -237,7 +236,7 @@ export function PitStopStats() {
       {allStops.length === 0 && !anyPitLoading ? (
         <div
           className="rounded-xl border p-10 text-center"
-          style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
         >
           <p className="text-gray-500">No pit stop data available yet.</p>
         </div>
@@ -266,9 +265,9 @@ export function PitStopStats() {
           {chartData.length > 0 && (
             <div
               className="rounded-xl border overflow-hidden"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
-              <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+              <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
                 <h2 className="font-bold text-white text-sm">Average Pit Stop Duration by Team</h2>
               </div>
               <div className="p-4">
@@ -288,7 +287,7 @@ export function PitStopStats() {
                       tickFormatter={(v: number) => `${v}s`}
                     />
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ffffff08' }} />
-                    <Bar dataKey="avg" radius={[4, 4, 0, 0]}>
+                    <Bar dataKey="avg" radius={[4, 4, 0, 0]} isAnimationActive animationDuration={600} animationEasing="ease-out">
                       {chartData.map((entry, i) => (
                         <Cell key={i} fill={entry.color} />
                       ))}
@@ -304,13 +303,13 @@ export function PitStopStats() {
             {/* Best stops */}
             <div
               className="rounded-xl border overflow-hidden"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
-              <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: '#2a2a2a' }}>
+              <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: 'var(--border-default)' }}>
                 <span className="text-yellow-400">⚡</span>
                 <h2 className="font-bold text-white text-sm">Top 10 Fastest Stops</h2>
               </div>
-              <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+              <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
                 {top10.map((s, i) => {
                   const driver = getDriverByCode(s.driverId)
                   const team = getTeamByConstructorId(s.constructorId)
@@ -341,13 +340,13 @@ export function PitStopStats() {
             {/* Worst stops */}
             <div
               className="rounded-xl border overflow-hidden"
-              style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
             >
-              <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: '#2a2a2a' }}>
+              <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: 'var(--border-default)' }}>
                 <span>🐢</span>
                 <h2 className="font-bold text-white text-sm">Worst Stops (&gt;4s)</h2>
               </div>
-              <div className="divide-y" style={{ borderColor: '#2a2a2a' }}>
+              <div className="divide-y" style={{ borderColor: 'var(--border-default)' }}>
                 {worst5.map((s, i) => {
                   const driver = getDriverByCode(s.driverId)
                   const team = getTeamByConstructorId(s.constructorId)
@@ -380,15 +379,15 @@ export function PitStopStats() {
           {/* Driver stats */}
           <div
             className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
-            <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+            <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
               <h2 className="font-bold text-white text-sm">Driver Pit Stop Stats</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b" style={{ borderColor: '#2a2a2a' }}>
+                  <tr className="border-b" style={{ borderColor: 'var(--border-default)' }}>
                     <th className="text-left px-5 py-2 text-gray-500 font-medium text-xs">Driver</th>
                     <th className="text-right px-4 py-2 text-gray-500 font-medium text-xs">Stops</th>
                     <th className="text-right px-4 py-2 text-gray-500 font-medium text-xs">Fastest</th>
@@ -405,7 +404,7 @@ export function PitStopStats() {
                       <tr
                         key={d.driverId}
                         className="border-b last:border-0 hover:bg-white/[0.02] transition-colors"
-                        style={{ borderColor: '#2a2a2a' }}
+                        style={{ borderColor: 'var(--border-default)' }}
                       >
                         <td className="px-5 py-2.5">
                           <div className="flex items-center gap-2">
@@ -443,15 +442,15 @@ export function PitStopStats() {
           {/* Team stats */}
           <div
             className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
           >
-            <div className="px-5 py-3 border-b" style={{ borderColor: '#2a2a2a' }}>
+            <div className="px-5 py-3 border-b" style={{ borderColor: 'var(--border-default)' }}>
               <h2 className="font-bold text-white text-sm">Team Pit Stop Stats</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b" style={{ borderColor: '#2a2a2a' }}>
+                  <tr className="border-b" style={{ borderColor: 'var(--border-default)' }}>
                     <th className="text-left px-5 py-2 text-gray-500 font-medium text-xs">Team</th>
                     <th className="text-right px-4 py-2 text-gray-500 font-medium text-xs">Stops</th>
                     <th className="text-right px-4 py-2 text-gray-500 font-medium text-xs">Fastest</th>
@@ -465,7 +464,7 @@ export function PitStopStats() {
                       <tr
                         key={t.constructorId}
                         className="border-b last:border-0 hover:bg-white/[0.02] transition-colors"
-                        style={{ borderColor: '#2a2a2a' }}
+                        style={{ borderColor: 'var(--border-default)' }}
                       >
                         <td className="px-5 py-2.5">
                           <div className="flex items-center gap-2">
@@ -516,7 +515,7 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
   return (
     <div
       className="rounded-xl border px-4 py-3"
-      style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
     >
       <p className="text-gray-500 text-xs mb-1">{label}</p>
       <p className="text-white font-bold text-xl font-mono">{value}</p>

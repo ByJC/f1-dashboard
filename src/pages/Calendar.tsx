@@ -5,6 +5,7 @@ import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import { formatDate, isSprintWeekend, getCountryCode } from '@/utils'
 import { fetchWeather } from '@/api/openf1'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const STALE_TIME = 1000 * 60 * 30
 
@@ -164,6 +165,24 @@ export function Calendar() {
                     {weather.rainfall && <span>💧</span>}
                   </div>
                 )}
+
+                <div className="mt-3 flex items-center justify-between">
+                  <Link
+                    to={`/weekend/${race.round}`}
+                    className="text-xs font-semibold transition-colors hover:text-red-300"
+                    style={{ color: '#ef4444' }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    Weekend Summary →
+                  </Link>
+                  <Link
+                    to={`/circuits/${race.Circuit.circuitId}`}
+                    className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    Circuit
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )

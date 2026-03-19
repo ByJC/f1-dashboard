@@ -149,6 +149,64 @@ export function Home() {
               {completedRaces} done · {totalRaces - completedRaces} remaining
             </p>
           </motion.div>
+
+          {/* Championship Battle */}
+          {driverStandings && driverStandings.length >= 2 && (() => {
+            const p1 = driverStandings[0]
+            const p2 = driverStandings[1]
+            const p1pts = parseFloat(p1.points)
+            const p2pts = parseFloat(p2.points)
+            const total = p1pts + p2pts
+            const gap = Math.round(p1pts - p2pts)
+            const remaining = totalRaces - completedRaces
+            const maxPointsLeft = remaining * 26
+            const p1Driver = getDriverByCode(p1.Driver.code ?? p1.Driver.driverId)
+            const p2Driver = getDriverByCode(p2.Driver.code ?? p2.Driver.driverId)
+            return (
+              <motion.div
+                {...cardHover}
+                className="rounded-xl p-5 border"
+                style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
+              >
+                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-3">
+                  Championship Battle
+                </p>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-white font-bold text-sm">
+                      {p1.Driver.givenName} {p1.Driver.familyName}
+                    </p>
+                    <p className="text-xs text-gray-500">{p1.Constructors[0]?.name}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-white font-mono font-black">{p1pts}</p>
+                    <p className="text-xs font-bold" style={{ color: p1Driver?.color ?? '#e10600' }}>
+                      +{gap}pts
+                    </p>
+                  </div>
+                </div>
+                <div className="h-2 rounded-full overflow-hidden mb-2" style={{ backgroundColor: 'var(--border-default)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: p1Driver?.color ?? '#e10600' }}
+                    initial={{ width: 0 }}
+                    animate={{ width: total > 0 ? `${(p1pts / total) * 100}%` : '50%' }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm" style={{ color: p2Driver?.color ?? '#6b7280' }}>
+                      {p2.Driver.givenName} {p2.Driver.familyName}
+                    </p>
+                    <p className="text-xs text-gray-600">{p2.Constructors[0]?.name}</p>
+                  </div>
+                  <p className="text-white font-mono font-bold text-sm">{p2pts}</p>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">{maxPointsLeft} pts left to distribute</p>
+              </motion.div>
+            )
+          })()}
         </div>
       )}
 

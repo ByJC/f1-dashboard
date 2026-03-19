@@ -16,6 +16,7 @@ import {
   useDriverCareerResults,
   useDriverCareerQualifying,
   useDriverAllSeasonStandings,
+  useWikipediaPhoto,
 } from '@/hooks/useF1Data'
 import { drivers, getDriver, getTeamByConstructorId } from '@/utils'
 import type { RaceResult, QualifyingResult } from '@/types/f1'
@@ -83,6 +84,8 @@ export function DriverProfile() {
 
   const localDriver = getDriver(effectiveDriverId)
   const driverColor = localDriver?.color ?? '#e10600'
+
+  const { data: photoUrl } = useWikipediaPhoto(effectiveDriverId)
 
   const raceResults = useMemo(
     () =>
@@ -206,12 +209,21 @@ export function DriverProfile() {
             borderLeft: `4px solid ${driverColor}`,
           }}
         >
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black flex-shrink-0"
-            style={{ backgroundColor: `${driverColor}20`, color: driverColor }}
-          >
-            #{localDriver.number}
-          </div>
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt={`${localDriver.firstName} ${localDriver.lastName}`}
+              className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+              style={{ border: `2px solid ${driverColor}` }}
+            />
+          ) : (
+            <div
+              className="w-14 h-14 rounded-full flex items-center justify-center text-lg font-black flex-shrink-0"
+              style={{ backgroundColor: `${driverColor}20`, color: driverColor }}
+            >
+              #{localDriver.number}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <img

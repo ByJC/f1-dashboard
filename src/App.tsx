@@ -24,6 +24,9 @@ import { Draft } from '@/pages/Draft'
 import { TeamRadio } from '@/pages/TeamRadio'
 import { NotableEvents } from '@/pages/NotableEvents'
 import { DriverProfile } from '@/pages/DriverProfile'
+import { Compare } from '@/pages/Compare'
+import { WeekendSummary } from '@/pages/WeekendSummary'
+import { CircuitDetail } from '@/pages/CircuitDetail'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +65,9 @@ function App() {
               <Route path="/notable-events" element={<NotableEvents />} />
               <Route path="/drivers" element={<Navigate to="/drivers/norris" replace />} />
               <Route path="/drivers/:driverId" element={<DriverProfile />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/weekend/:round" element={<WeekendSummary />} />
+              <Route path="/circuits/:circuitId" element={<CircuitDetail />} />
             </Route>
           </Routes>
           <Analytics />

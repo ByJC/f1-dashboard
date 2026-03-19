@@ -3,7 +3,28 @@ import 'leaflet/dist/leaflet.css'
 import { useSchedule, useRaceResults } from '@/hooks/useF1Data'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { formatDate, isSprintWeekend, getCountryCode } from '@/utils'
+import { useNavigate } from 'react-router-dom'
 import L from 'leaflet'
+
+const CIRCUIT_SVG_MAP: Record<string, string> = {
+  albert_park: 'australia',
+  bahrain: 'bahrain',
+  suzuka: 'japan',
+  shanghai: 'china',
+  monaco: 'monaco',
+  catalunya: 'spain',
+  red_bull_ring: 'austria',
+  silverstone: 'greatbritain',
+  hungaroring: 'hungary',
+  spa: 'belgium',
+  zandvoort: 'netherlands',
+  monza: 'italy',
+  baku: 'azerbaijan',
+  marina_bay: 'singapore',
+  rodriguez: 'mexico',
+  interlagos: 'brazil',
+  yas_marina: 'abudhabi',
+}
 
 // Fix Leaflet default icon in Vite
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +38,7 @@ L.Icon.Default.mergeOptions({
 export function WorldMap() {
   const { data: schedule, isLoading } = useSchedule()
   const { data: races } = useRaceResults()
+  const navigate = useNavigate()
 
   const now = new Date()
 
@@ -90,7 +112,14 @@ export function WorldMap() {
                 }}
               >
                 <Popup>
-                  <div style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', minWidth: 160 }}>
+                  <div style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px', minWidth: 180 }}>
+                    {CIRCUIT_SVG_MAP[race.Circuit.circuitId] && (
+                      <img
+                        src={`/tracks/${CIRCUIT_SVG_MAP[race.Circuit.circuitId]}.svg`}
+                        alt={race.Circuit.circuitName}
+                        style={{ width: '100%', height: 80, objectFit: 'contain', filter: 'invert(1)', marginBottom: 6 }}
+                      />
+                    )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                       <img
                         src={`https://flagcdn.com/w20/${getCountryCode(race.Circuit.Location.country)}.png`}
@@ -120,6 +149,12 @@ export function WorldMap() {
                         SPRINT
                       </span>
                     )}
+                    <button
+                      onClick={() => navigate(`/circuits/${race.Circuit.circuitId}`)}
+                      style={{ marginTop: 8, display: 'block', width: '100%', padding: '4px 0', borderRadius: 4, backgroundColor: '#e1060015', color: '#ef4444', border: '1px solid #e1060030', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      View Circuit →
+                    </button>
                   </div>
                 </Popup>
               </CircleMarker>

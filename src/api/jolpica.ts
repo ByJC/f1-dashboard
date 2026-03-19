@@ -94,3 +94,13 @@ export async function fetchDriverInfo(driverId: string): Promise<Driver | null> 
   const data = await fetchJolpica<never>(`/drivers/${driverId}`, 1)
   return data.MRData.DriverTable?.Drivers[0] ?? null
 }
+
+export async function fetchCircuitResults(circuitId: string): Promise<Race[]> {
+  const data = await fetchJolpica<Race>(`/circuits/${circuitId}/results`, 5)
+  return data.MRData.RaceTable?.Races ?? []
+}
+
+export async function fetchCircuitQualifying(circuitId: string): Promise<Race[]> {
+  const data = await fetchJolpica<Race>(`/circuits/${circuitId}/qualifying`, 5)
+  return data.MRData.RaceTable?.Races ?? []
+}

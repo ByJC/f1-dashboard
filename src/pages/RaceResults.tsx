@@ -1,7 +1,52 @@
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useRaceResults } from '@/hooks/useF1Data'
 import { LoadingSpinner, ErrorMessage } from '@/components/LoadingSpinner'
 import { getDriverByCode } from '@/utils'
 import type { DriverInfo } from '@/types/f1'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
+
+interface LapTiming {
+  driverId: string
+  position: string
+  time: string
+}
+
+interface LapData {
+  number: string
+  Timings: LapTiming[]
+}
+
+function useLapPositions(round: string | null) {
+  return useQuery({
+    queryKey: ['lapPositions', round],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://api.jolpi.ca/ergast/f1/current/${round}/laps.json?limit=2000`
+      )
+      if (!res.ok) throw new Error(`API error: ${res.status}`)
+      const json = await res.json()
+      const laps: LapData[] = json.MRData?.RaceTable?.Races?.[0]?.Laps ?? []
+      return laps.map(lap => {
+        const entry: Record<string, number | string> = { lap: parseInt(lap.number) }
+        lap.Timings.forEach(t => {
+          entry[t.driverId] = parseInt(t.position)
+        })
+        return entry
+      })
+    },
+    enabled: round !== null,
+    staleTime: 1000 * 60 * 30,
+  })
+}
 
 const POSITION_COLORS: Record<number, string> = {
   1: '#ffd700',
@@ -18,6 +63,8 @@ function getPositionLabel(position: string, status: string): string {
 
 export function RaceResults() {
   const { data: races, isLoading, error } = useRaceResults()
+  const [openLapChart, setOpenLapChart] = useState<string | null>(null)
+  const { data: lapData, isLoading: lapLoading } = useLapPositions(openLapChart)
 
   if (isLoading) return <LoadingSpinner message="Loading race results..." />
   if (error) return <ErrorMessage message={(error as Error).message} />
@@ -135,6 +182,95 @@ export function RaceResults() {
         </div>
       </div>
 
+      {/* Lap Chart Modal */}
+      {openLapChart !== null && (() => {
+        const race = races.find(r => r.round === openLapChart)
+        const top10DriverIds = race?.Results?.slice(0, 10).map(r => r.Driver.driverId) ?? []
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
+            onClick={() => setOpenLapChart(null)}
+          >
+            <div
+              className="rounded-xl border w-full max-w-3xl p-5"
+              style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-white text-sm">{race?.raceName} — Lap Chart</h2>
+                <button
+                  onClick={() => setOpenLapChart(null)}
+                  className="text-gray-500 hover:text-white text-lg"
+                >
+                  ✕
+                </button>
+              </div>
+              {lapLoading ? (
+                <div className="text-center py-8 text-gray-500">Loading lap data...</div>
+              ) : !lapData || lapData.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">No lap data available</div>
+              ) : (
+                <>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={lapData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                      <XAxis
+                        dataKey="lap"
+                        tick={{ fill: '#6b7280', fontSize: 10 }}
+                        label={{ value: 'Lap', position: 'insideBottomRight', fill: '#6b7280', fontSize: 10 }}
+                      />
+                      <YAxis
+                        reversed
+                        domain={[1, 10]}
+                        tick={{ fill: '#6b7280', fontSize: 10 }}
+                        allowDecimals={false}
+                      />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid #3a3a3a', borderRadius: 8 }}
+                        labelStyle={{ color: '#fff' }}
+                        labelFormatter={v => `Lap ${v}`}
+                      />
+                      {top10DriverIds.map(driverId => {
+                        const info = getDriverByCode(driverId) ?? getDriverByCode(driverId.slice(0, 3).toUpperCase())
+                        const color = info?.color ?? '#6b7280'
+                        return (
+                          <Line
+                            key={driverId}
+                            type="monotone"
+                            dataKey={driverId}
+                            stroke={color}
+                            strokeWidth={1.5}
+                            dot={false}
+                            isAnimationActive={false}
+                          />
+                        )
+                      })}
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {top10DriverIds.map(driverId => {
+                      const result = race?.Results?.find(r => r.Driver.driverId === driverId)
+                      const info = result ? getDriverByCode(result.Driver.code ?? '') : null
+                      const color = info?.color ?? '#6b7280'
+                      return (
+                        <span
+                          key={driverId}
+                          className="text-xs px-2 py-0.5 rounded font-mono font-bold"
+                          style={{ backgroundColor: `${color}20`, color, border: `1px solid ${color}40` }}
+                        >
+                          {result?.Driver.code ?? driverId.slice(0, 3).toUpperCase()}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Individual race results */}
       <h2 className="text-lg font-bold text-white mt-8">Race Details</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -149,6 +285,17 @@ export function RaceResults() {
                 <span className="text-gray-500 text-xs font-mono mr-2">R{race.round}</span>
                 <span className="text-white font-semibold text-sm">{race.raceName}</span>
               </div>
+              <button
+                onClick={() => setOpenLapChart(openLapChart === race.round ? null : race.round)}
+                className="text-xs px-2 py-1 rounded font-semibold transition-colors"
+                style={{
+                  backgroundColor: openLapChart === race.round ? '#e1060020' : 'var(--border-default)',
+                  color: openLapChart === race.round ? '#ef4444' : '#6b7280',
+                  border: `1px solid ${openLapChart === race.round ? '#e1060040' : 'transparent'}`,
+                }}
+              >
+                Lap Chart
+              </button>
             </div>
             <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               {race.Results?.slice(0, 10).map(result => {

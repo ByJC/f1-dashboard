@@ -78,10 +78,9 @@ export function PitStopStats() {
   const { data: schedule, isLoading: schedLoading, error: schedError } = useSchedule()
   const { data: raceResults, isLoading: resultsLoading, error: resultsError } = useRaceResults()
 
-  const now = new Date()
   const completedRaces = useMemo(
-    () => (schedule ?? []).filter(r => new Date(r.date) < now),
-    [schedule, now],
+    () => (schedule ?? []).filter(r => new Date(r.date) < new Date()),
+    [schedule],
   )
 
   // Build constructor map from race results

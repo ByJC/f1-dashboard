@@ -43,7 +43,7 @@ const STALE_TIME = 1000 * 60 * 30
 
 function usePitStops(round: string | null) {
   return useQuery<JolpicaPitStop[]>({
-    queryKey: ['pitStops', round],
+    queryKey: ['pitStopsStrategy', round],
     queryFn: async () => {
       if (!round) return []
       const res = await fetch(
@@ -65,10 +65,9 @@ export function TireStrategy() {
   const { data: raceResults, isLoading: resultsLoading, error: resultsError } = useRaceResults()
   const { data: openF1Sessions } = useOpenF1Sessions(2026)
 
-  const now = new Date()
   const completedRaces = useMemo(
-    () => (schedule ?? []).filter(r => new Date(r.date) < now),
-    [schedule, now],
+    () => (schedule ?? []).filter(r => new Date(r.date) < new Date()),
+    [schedule],
   )
 
   const [selectedRound, setSelectedRound] = useState<string | null>(null)
@@ -100,27 +99,8 @@ export function TireStrategy() {
   if (isLoading) return <LoadingSpinner message="Loading tire strategy..." />
   if (error) return <ErrorMessage message={(error as Error).message} />
 
-  if (completedRaces.length === 0) {
-    return (
-      <div className="space-y-6">
-        <PageHeader />
-        <div
-          className="rounded-xl border p-12 text-center"
-          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
-        >
-          <div className="text-4xl mb-3">🏎️</div>
-          <p className="text-gray-400 font-semibold">No completed races yet</p>
-          <p className="text-gray-600 text-sm mt-1">Tire data will appear after races are completed.</p>
-        </div>
-      </div>
-    )
-  }
-
   // Find race result for selected round to get driver order and lap count
   const selectedRaceResult = (raceResults ?? []).find(r => r.round === activeRound)
-  const totalLaps = selectedRaceResult?.Results
-    ? Math.max(...selectedRaceResult.Results.map(r => parseInt(r.laps) || 0))
-    : 70
 
   // Build driver number → driverId map from local drivers data
   const numberToDriverId = useMemo(() => {
@@ -151,11 +131,31 @@ export function TireStrategy() {
     return acc
   }, [openF1Stints, numberToDriverId])
 
+  if (completedRaces.length === 0) {
+    return (
+      <div className="space-y-6">
+        <PageHeader />
+        <div
+          className="rounded-xl border p-12 text-center"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)' }}
+        >
+          <div className="text-4xl mb-3">🏎️</div>
+          <p className="text-gray-400 font-semibold">No completed races yet</p>
+          <p className="text-gray-600 text-sm mt-1">Tire data will appear after races are completed.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const totalLaps = selectedRaceResult?.Results
+    ? Math.max(...selectedRaceResult.Results.map(r => parseInt(r.laps) || 0))
+    : 70
+
   const hasOpenF1Data = Object.keys(openF1StintsByDriver).length > 0
 
   // Group pit stops by driver (fallback)
   const pitsByDriver = useMemo<Record<string, JolpicaPitStop[]>>(() => {
-    if (!pitStops) return {}
+    if (!Array.isArray(pitStops)) return {}
     const acc: Record<string, JolpicaPitStop[]> = {}
     pitStops.forEach(p => {
       if (!acc[p.driverId]) acc[p.driverId] = []
